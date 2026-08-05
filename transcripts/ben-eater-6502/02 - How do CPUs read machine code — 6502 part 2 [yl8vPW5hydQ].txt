@@ -1,0 +1,1453 @@
+Title: How do CPUs read machine code? — 6502 part 2
+Video ID: yl8vPW5hydQ
+URL: https://www.youtube.com/watch?v=yl8vPW5hydQ
+Playlist: Build a 65c02-based computer from scratch
+Playlist URL: https://www.youtube.com/playlist?list=PLowKtXNTBypFbtuVMUVXNR0z1mu7dp7eH
+Source: YouTube auto-generated captions via videodb.org
+---
+
+I set out to write the classic hello
+world program but not like this not
+building on a whole stack of software
+but starting with just a microprocessor
+and this is the 6502 microprocessor that
+started the home computer revolution in
+the 1980s but I haven't gotten too far
+just yet in the last video we hooked
+this up and it is actually executing
+code but it's just not doing all
+anything all that interesting just yet
+you've got the data bus pins hooked up
+here through these resistors so that no
+matter what the processor does it always
+reads 1 1 1 0 1 0 1 0 which is EA and
+hexadecimal so whenever it tries to
+fetch an instruction it always gets EA
+and that happens to be the opcode for
+the no op or no operation instruction
+which does nothing so if we saw in the
+last video the microprocessor
+initializes and fetches and executes
+instructions but right now we aren't
+able to feed it any instructions from
+anything other than literally hardwiring
+this no op instruction so it just sits
+here successfully doing nothing forever
+so I guess it's running a program but
+not a very interesting one but let's
+hook up a ROM chip that we can program
+with some different instructions that
+the processor will be able to fetch and
+execute using different addresses so
+this is a 28 C 256 EEPROM and the the
+256 refers to the fact that it can store
+256 K or 256 thousand bits and that's
+bit so if you want to think in terms of
+bytes it's going to be 32 kilobytes now
+if we look at the pinout for the EEPROM
+you know it's pretty straightforward
+they're a bunch of address lines and
+then there's the the state data lines
+the i/o lines and basically the way this
+works is if we set all these address
+lines to particular address then we get
+out some data on the data lines based on
+whatever we programmed in the EEPROM for
+that address so we can use this program
+or to to program it ahead of time with
+whatever instructions or data we want
+the microprocessor to read but I'll get
+into that in a minute
+yeah first let's walk through exactly
+how this is going to work now roughly
+speaking is pretty straightforward you
+know we'll hook up 15 address lines from
+the microprocessor over to the EEPROM
+here and then we'll hook up the eight
+data lines between the processor and the
+EEPROM and then whenever the processor
+wants to fetch an instruction from the
+EEPROM it'll set those 15 address lines
+to some particular address and here's
+the data lines to read whatever data the
+EEPROM spits out at it one thing you
+might notice is that eeproms got 15
+address lines write a 0 through a 14 but
+the microprocessor has got 16 address
+lines a 0 through a 15 so
+what does that mean well with 16 address
+lines on the microprocessor the address
+can be anything from all zeros which is
+you know an address of 0 through all
+ones which is an address of you know
+65,000 or ffff in hex so basically the
+microprocessor can access you know up to
+65,000 unique addresses but the ROM only
+needs 15 address lines because it can
+only hold 32k of data so we kind of have
+a choice here if we just hook a 0
+through a 14 directly from the
+microprocessor to the ROM just like we
+have here then when the micro processor
+reads address 0 through 7 FFF or you
+know 32,000 767 then it's going to read
+address 0 through 7 ffff for 32,000 767
+from the EEPROM which means it's gonna
+be able to read from anywhere in the ROM
+which is which is great but then if the
+processor tries to read from address
+8,000 through ffff this in this a 15
+line will be high this this first bit
+here that's going to be high but the
+rest of this the rest of the address
+lines are still going to count
+essentially from 0 through 7 FFF so
+essentially the the processor is gonna
+see the contents of the ROM sort of
+repeated twice and you know maybe that's
+ok but it's kind of a waste because we
+could use these addresses here for
+something else so what we could do is we
+could connect that that a 15 line that
+we otherwise weren't using we could
+connect that up to the chip enable
+signal on the EEPROM and that's a that's
+an active low signal so what this will
+do is it'll say well the EEPROM is only
+gonna output anything so the chip is
+enabled it's only gonna output anything
+when and when a 15 is low because that's
+an active low signal that way the the
+wrong sort of maps to the first half of
+the address space but if the the
+processor tries to read from the other
+half the address space then you know
+that top bit that a 15 bit is going to
+be high and so the roms not gonna output
+anything that means we can have other
+things at these addresses like RAM or
+input and output devices and so on but
+you might remember from the last video
+that when the microprocessor starts up
+the first thing it does is it reads from
+address fffc and fffd and does that to
+figure out where to start fetching
+instructions so we'd really like the FFC
+and fffd addresses to be somewhere in
+our ROM so that we can you know program
+that start address in the ROM
+but you know that's easy enough we can
+just invert a 15 before we before we
+connect it to the chip enable signal so
+this way when the microprocessor is is
+reading from this upper half of the
+address space that a 15 line is going to
+be high that first bit is a 1 so this
+will be high which when we inverted it
+will be low and then the the low signal
+here will activate the chip enable which
+is an active low pin and so this
+inverter will essentially move the
+EEPROM from the lower half of the
+address space to the upper half of the
+address space which means we can get
+that fffc and fffd value out of the
+EEPROM and then the lower part of the
+address space from zero all the way to 7
+F of F that'll be unused and we can use
+that in the future for something else so
+let's hook this up and actually instead
+of an inverter I'm going to use a NAND
+gate
+configured like this and this is just
+the same as an inverter because both
+pins are tied together like this so both
+inputs are high then the output is going
+to be low and if both inputs are low
+then the output is going to be high and
+I could just as easily use an inverter
+but you'll see later why I'm using the
+damn gate so I have the EEPROM and start
+by connecting power and ground and then
+there are a couple of control signals I
+can hook up so we've got the right
+enable signal here which is active low
+on pin 27 so I'll tie that high since
+that's just used for programming EEPROM
+yes even though it's a programmable ROM
+it's it's designed to function as a ROM
+and you'd read-only memory so once it's
+programmed and put into a circuit like
+this we really only want to read from it
+next we'll type in 22 which is output
+enable I'll tie that low so the outputs
+always enabled but of course that's
+still only if the chip is enabled so
+really by tying the output enable pin to
+ground like this we're saying that the
+output of the EEPROM will be enabled any
+time the chip is enabled but the chip
+enable signal on pin 20 remember we're
+gonna hook that through the inverter
+back to at a 15th at the top address
+line so let's do that and remember for
+the inverter I'm actually going to use a
+NAND gate so I'll add a 74 HC 0 0 which
+is which has 4 NAND gates on it and then
+I'll connect power and ground for this
+chip
+then I'll connect the a 15 line which is
+this pin right here this is the address
+15 I'll connect that around two pins 12
+and 13 which are just two of the or the
+two inputs for one of the NAND gates on
+here
+I'll connect those two pins together
+which basically turns this into an
+inverter and then the outputs on pin 11
+so this is just the inverted copy now of
+a 15 and I'll connect that around to the
+chip enable signal over here on the
+EEPROM so now if the microprocessor is
+reading from the upper half of its
+address space this a 15 line will be
+high and then we invert it over here so
+now it'll be low but then the chip
+enable signal here is active low so the
+EEPROM will be active whenever the
+processor is reading from the upper half
+of the address space which is what we
+want and so now that's just this NAND
+gate here connecting from address 15
+through to the chip enable line of the
+EEPROM now the rest of this is pretty
+straightforward is connecting address
+lines 0 through 14 and the data lines
+the data lines let's do that I'll hook
+up the other 15 address lines from the
+processor to the EEPROM and again
+starting with a 0 on the processor
+connecting to a 0 on the EEPROM and
+going all the way through a 14 on the
+processor connecting to a 14 on the
+EEPROM and if you're doing this project
+yourself you know maybe you bought the
+kits for me with all the parts
+definitely check out the data sheets to
+make sure you're connecting the right
+address lines to the right address lines
+once you've got the address lines hooked
+up then we want to do the same thing
+with the data lines but first make it
+these resistors out of here since we're
+no longer hard coding that no op
+instruction so then I'll hook up the
+eight data lines from the microprocessor
+to the EEPROM and I'll start with d7 on
+the microprocessor and hooked that to d7
+on the EEPROM and worked my way back to
+d0 on the micro processor hooking to d0
+on the EEPROM so now whenever the
+processor wants to fetch an instruction
+from the EEPROM it can read from any
+address in the in the top half of the
+address space and it'll be able to use
+these data lines these blue wires to
+read whatever data the EEPROM spits out
+at it so now let's program the EEPROM
+with some instructions and may be a good
+place to start is to fill the EEPROM
+with no op instructions so kind of where
+we started with resistors hardwiring the
+no op instruction but instead we'll just
+have an EEPROM full of no op
+instructions and so I'm going to use
+Python to create an EEPROM image file
+but you know I suppose you could use
+anything that'll let you create a binary
+file with specific bytes in it I'm using
+Python because it's quicker and easier
+for me but that has more to do with my
+personal familiarity with it than
+anything
+but anyway I'm creating a byte array
+just full of hex ei bytes and there's
+going to be 32,768 of them and like the
+last video I'm using the the EI hex
+because that's the opcode for a no op
+instruction so when the processor reads
+that ei it'll do nothing and just move
+on to the next byte so nothing but ei is
+don't make for a very interesting
+program but at least it is a valid
+program and then I can open a file to
+write it to W B means a write binary and
+then out file will be the file handle
+and then I can just use out file to
+write the ROM image and that'll create a
+binary file called ROM bin with exactly
+32,768 hex EA's in it and it has to be
+exactly 32768 bytes long because that's
+how big the EEPROM is so 32k EEPROM now
+if we save that and run it that'll
+create a ROM bin file and if I dump the
+contents you can see it's just full of
+EA's and it goes from 0 all the way up
+then the star just means the rest of the
+file is is the same as this line so it's
+just a whole bunch of EA's all the way
+up to 8,000 hex which is 32,768 and so
+we put this on the EEPROM now this is
+going to be address 0 in the EEPROM
+through will actually address 7 FFF but
+when we put that on the EEPROM remember
+that the processor is actually gonna
+fetch those bytes from address 8,000
+through ffff yeah because the EEPROM is
+only active when a 15 you know that top
+address line is active okay so let's get
+the EEPROM programmed so I'll put the
+EEPROM in the EEPROM programmer here and
+this is a TL 8 6 6 2 plus EEPROM
+programmer which seems to work pretty
+well and it comes with Windows software
+which will let you write a file to the
+EEPROM but there's also this open source
+mini Pro software that works with Mac or
+Linux so I can just do mini Pro tell it
+what type of device I'm using in this
+case it's an 80 28 C 256 EEPROM and then
+tell it to write the ROM bin file and
+there it goes
+it's programming the EEPROM with the
+contents of that file full of EA's now
+let's try it out I'll put the EEPROM
+back in the circuit and I'm gonna hook
+up the Arduino mega like I did in the
+last video so I'm hooking up all 16
+address lines
+so we can monitor exactly what the
+processor is doing with them so those
+are the sixteen address lines and then
+we'll hook up all eight data lines to
+the Arduino as well so we can see the
+data that the EEPROM is outputting then
+I'll also hook up the readwrite signal
+so we can keep an eye on that and the
+clock signal so the Arduino knows when
+to sample everything and speaking of the
+clock let me hook up the clock module
+here and this will let us slow down
+pause and single-step the clock and then
+I'll connect that power so make sure we
+connect the power here between the clock
+and the rest of this and connect to
+ground here common ground from the
+arduino that's somewhere and then we can
+power it all up now if I use the same
+Arduino program from the last video and
+open up the serial monitor we can see
+the processor is reading ei bytes from
+somewhere and it seems to be executing
+them now hold down reset and stop the
+clock and then we can single step
+through the initialization so first I'll
+clear the output here and I'll step
+through and then the first seven clocks
+are initialization and then we should
+see it reads from address F of F C and F
+F F D and remember from the last video
+it does that when it first resets to get
+the address to jump to to start
+executing now since it reads EI and ei
+then that means it's going to jump to
+address EI EI to start running code so
+if we advance the clock again we see it
+goes to address EI EI and it reads an
+instruction and of course ei is the no
+op instruction and so it'll just keep
+fetching and running those ei no up
+instructions at least until it gets to
+the end of the EEPROM at address ffff
+but so far this is basically what we're
+doing in the last video it's just that
+instead of hardwiring all of those EAS
+as just with those resistors we're
+reading them from the EEPROM but let's
+make a change to the EEPROM and see what
+happens so the first thing I'll change
+is let's have it start executing at the
+beginning of the EEPROM instead of
+address EI EI and to do that want to
+change those addresses at F of FC and F
+of FD which right now we're reading EI
+and ei which is giving us the start
+address of EI EI so to do that you'll
+here after we fill up the ROM with EI
+bytes what I can do is overwrite it with
+something else so I can say the ROM at
+address 7 FF C should be 0 and then ROM
+at address 7 FF D should be 80 hex
+and this is where we have to be careful
+not to confuse ourselves you know we're
+we're setting position 7 f FC and 7 f FD
+of the rom to these values but because
+in order to enable the rom the processor
+also has to set that a 15 the top
+address bit to one these values will
+actually appear to the processor at
+address f FC and f of FD and then the
+values here 0 0 and 8 0
+the processor is going to interpret that
+as address 8000 and so that's where it's
+going to jump to start executing
+instructions of course address 8,000 to
+the processor is really address 0 in the
+rom and in this file that we're creating
+here so it's actually with just this
+change let's give it a try
+so I'll save this and run the python
+program to regenerate the file and now
+if we look at a hex dump of the rom file
+you see it's still mostly full of EA's
+but now we've changed these two bytes
+here at you know 7f FC and 7f f d which
+of course will appear is f FF c and f FF
+d to the processor and in the process
+you're also going to read this address
+you know 0 0 8 zeros I couldn't read
+that as address 8,000 because the 6502
+processor always reads addresses with
+the low order byte first followed by the
+high order byte so it seems backwards
+but this is a relatively common way to
+store addresses and it's and it's the
+way the 6502 processor stores addresses
+and it's a you'll often see it referred
+to as little endian which just means
+that the the low order byte is for is
+stored first
+so let me fish the EEPROM out of there
+and then we'll reprogram it and I'll
+just run the programmer again to write
+the new file to the ROM there it goes
+and now let's get the rom back into the
+circuit and so I'll reset everything by
+starting a clock up holding down reset
+and stopping the clock so we can walk
+through the initialization so I'll clear
+the output here and then I'll step
+through the first seven clock cycles to
+initialize it and then on the next clock
+cycle we can see when it reads from fffc
+it's getting a zero zero and then when
+it reads from FFT it's getting an eight
+zero so now in the next step it should
+go to address eight zero zero zero and
+there it goes goes to address eight zero
+zero zero and of course it's reading an
+EI there because that's what the rest of
+the EEPROM is filled with and of course
+if we just keep going it's just going to
+keep reading those e's like before cool
+so now let's try writing a program that
+does something a little more interesting
+than just a bunch of no ops yeah because
+at this point the
+processors gonna try and execute any
+instructions that it finds you know
+starting at that address eight thousand
+which is really address zero of the ROM
+so let's try feeding it some different
+instructions well if we look at the data
+sheet for the microprocessor it's got
+this table that shows us all the
+different up codes and so for example if
+we wanted to a load a flip over here we
+can find this LD a instruction which is
+going to load some value into the a
+register and we can look here to see
+what the hexadecimal opcode is for for
+that load a instruction and actually a
+number of different opto load a
+depending on you know what we want to
+load into the a register for example if
+we want to load the a register with a
+value for memory the opcode is a d in
+hex and then we'd give it a memory
+address to load from or if we wanted to
+load from some memory address plus an
+offset you know from the X or Y register
+there op codes for that and and other
+things or if we want to just load the a
+register with a particular immediate
+value there's an opcode for that and
+that's what a nine is so if we go back
+to where we're creating our ROM image
+file if we set the first byte in our ROM
+to a nine
+you know this says load the next byte
+from ROM into the a register so then we
+can set the next byte at location one
+here to you know some other random value
+you know so you know let's just say 42
+hex and then now these first two bytes
+here make up the first instruction that
+the processor is going to execute and it
+says load the value 42 into the a
+register and you know maybe that's not
+very exciting but now that we have a
+value in the a register we can do
+something with it
+like you know try writing it to some
+other address so if we look back at our
+instruction opcodes go down here there's
+a store a instruction down here at the
+bottom which will store the value in the
+a register to some location and again
+there you know there are different
+addressing modes but this first one 8d
+is going to store the value in the a
+register to an address so to go back to
+our program you know after loading the a
+register with this you know value 42 if
+we add another instruction 8d yeah
+that's going to stay store that value
+that 42 somewhere in memory and it
+expects the next two bytes here to give
+it an address so we can set the next two
+bytes to you know say 0 0 and say 6 0
+then you know these 3 bytes together the
+8 d 0 0 6 0 say to store the contents of
+a register at
+6,000 so what is this actually going to
+do well let's give it a try so I'll save
+this and then I'll run the Python script
+to regenerate the ROM file and now if we
+look at the hex dump for the ROM file we
+can see our program here in at the
+beginning so this is our program the
+load a 42 and then the store a 6000 and
+then everything else is full of EA
+instructions up here till the very end
+where we have the reset vector which
+tells it to start executing you know
+right here the start okay so now let me
+just power this off and I'll fish the
+EEPROM out of here so we can reprogram
+it get that back into the programmer and
+then I'll go ahead and reprogram it so
+writing that new ROM file there it goes
+okay and it's programmed put the EEPROM
+back in our circuit and I'll power it up
+and then just to get this or a reset and
+everything I'll let the clock run a
+little bit and then hold down reset to
+reset it while the clock is running and
+then stop the clock
+and then I'll go ahead and clear the
+output over here so we can see what's
+going on and then I'll start stepping
+the clock so again it's going to be
+seven clock cycles to initialize and
+then the next two it's going to read the
+reset vector and so we see it's reading
+zero zero then eight zero so it's going
+to jump to 8,000 and there it goes
+and now you can see it's reading a nine
+from address 8,000 and of course that's
+the opcode for the load a instruction
+and so next we'll see that it reads the
+42 hex so at this point it should have
+loaded that 42 now into the a register
+then next we're going to see the
+instruction 8d which is the instruction
+to store the contents of the a register
+so then it's going to keep going to get
+the address to store two so we see zero
+zero and then six zero and so at this
+point it's read this instruction to say
+you know store a address you know six
+zero zero zero because right it's gonna
+read that sort of backwards or you know
+in little-endian format if you will but
+now watch the next clock cycle now the
+processor set the address to 6000 and
+now it's writing to that address instead
+of reading and it's writing the value 42
+and then if we keep going you see it
+jumps back to address eight thousand
+five and now it's just going to read you
+know the EEA no op instructions since
+that's what the rest of the ROM is
+filled with but this is pretty
+interesting here you know we got the
+processor to actually write this value
+which means it's
+all the address lines to 6000 and then
+the processor put the value 42 on the
+data lines and and set the read right
+line low to indicate that it was writing
+so in all these other cases when we look
+at the data here this data is coming
+from the EEPROM right this is our
+program that we put in the EEPROM but
+this 42 here this is actually being put
+out on the bus by the processor itself
+now in this case there's nothing
+actually at address 6000 you know the
+only thing connected to the processor
+other than you know the Arduino that
+we're just using for monitoring you know
+the only other thing connected is the
+EEPROM and it's only enabled for
+addresses 8000 through ffff
+so in some sense when the processor
+outputs to address 6000 here it's just
+kind of yelling into the void there's
+nothing actually paying attention to
+address 6000 but you know we could add
+some other hardware that responds to
+different addresses
+you know either Ram so you know data
+like the this 42 could you know we could
+be stored in memory somewhere or other
+hardware you know in fact this is
+actually how we're gonna do input and
+output you know so if we want to output
+data we just have some hardware that
+responds when the processor sets the
+address lines to to a particular address
+like this and then from the processors
+perspective you know it'll just store
+different values to a particular address
+to tell the output Hardware what to do
+so let's think about what that output
+hardware might look like you know so if
+our program and in the processor and
+it's gonna output data by writing to a
+particular address like this this you
+know writing to address 6000 for example
+then the output Hardware you know
+whether you know it so it's a display or
+whatever it is it needs to be able to
+look at the address lines of the
+processor to see when they match you
+know this particular address and then
+when they do you know grab the data from
+the data lines here and do something
+with it
+and you know the important insight here
+is that when the processor outputs data
+you know it's using the same address bus
+and the same data bus that it uses for
+everything else you know some processors
+might have separate interfaces or
+something to do i oh
+but at the 6502 uses the same address
+bus and the same data bus that it uses
+to to fetch and execute instructions or
+or access memory or whatever else you
+know so if we're thinking about how out
+port hardware might work then we've got
+to realize that you know these address
+lines are going to be flipping all over
+the place and the data lines are
+flipping all over the place and so the
+only thing that's relevant to the output
+hardware in all of this is this one
+moment here where the processor is
+actually using the address and data
+lines to output something so if we
+wanted some sort of output display to to
+play this 42 or whatever then we need
+some hardware that's looking at the
+address lines and then only when they
+match 6000 you'll grab the data this 42
+and latch it into an external register
+or something you know somehow store this
+42 because it's only there for this one
+clock cycle so this means any kind of
+output device we need has to have at
+least two components some address decode
+logic to detect when the processor is
+writing to this 6000 address and then a
+latch to store the data that its output
+so that it can be displayed even after
+the processor you know here has moved on
+to other things now when it comes to a
+latching data I've got a whole series of
+videos where I build a CPU from scratch
+and as part of that series I've got
+videos where I talk about SR latches D
+latches D flip-flops and then in how to
+build a register and even an output
+display all from scratch so if you want
+to go down that rabbit hole well yeah
+you know you're in luck
+but for this video I'm gonna use a chip
+that does a lot of that work for us and
+that's the 65 C 22 versatile interface
+adapter and as the name would imply the
+65 C 22 versatile interface adapter is
+designed to work alongside the 65 c02
+microprocessor that we've already been
+using and it does a whole you know a
+whole bunch of interesting and useful
+things that would you know take multiple
+videos to fully explore one of the most
+basic things it does is latch data for
+input and output so if we start by just
+looking at the pin out you can get some
+sense of what it'll do for us it's got
+these d0 through d7 pins which interface
+right to our data bus and it's also got
+the the fee 2 which is the the clock pin
+which is designed to connect right up to
+the same system clock we use for the
+microprocessor and you know the nice
+thing about this chip is because it's
+designed to work with the 6502 processor
+you know all the timings gonna just work
+you know so we just have to connect the
+same clock and it's just designed to be
+able to send data back and forth on the
+data bus here and you know we can still
+go through all the timing diagrams and
+double-check that it that it's actually
+going to work but the point is the chips
+are designed to work together so I'm not
+going to go through all that in this
+video but it's got the clock it's got
+the data it's got a read/write pin that
+you know will connect right up to the
+read/write pin on the processor and then
+a couple of chip select pins the CS one
+and CS 2 here that we can use to tell
+the chip when the processor is actually
+talking to it and so we'll have to have
+some you know address decode logic that
+you know when we're writing to just the
+right address it enables those those
+chip select pins and so you know
+basically once we hook this up the
+processes are going to be able to
+we talked back and forth to this chip
+and then on the other side there's just
+a whole bunch of i/o lines that are
+latched so we've got port a 0 through 7
+and then port B 0 through 7 and these
+are these are latched outputs or we can
+actually also use them for inputs and so
+one of the things that this chip lets us
+do is we can send some data from the
+processor over here and then it'll latch
+that data on to you know one of these
+i/o ports over here their port a or port
+B and then hold that data there while
+the processor goes on to do other things
+and then it's got these four register
+select pins RS 0 through RS 3 that are
+used to select you know which port we're
+talking to or or you know some of the
+other functions that the the chip
+supports so we're gonna hook up the
+clock we're gonna hook up the data bus
+and we're gonna hook up the read/write
+signal but before we get to any of that
+we need some logic to figure out when
+we're actually talking to this chip so
+for example if we want data that we're
+writing to you know address 6000 to be
+latched by the 65 22 we need some logic
+to enable the 65 22 when the processor
+is writing to or you know or reading
+from address 6000 so for address 6000
+hex this is what that looks like in
+binary so this is what the address lines
+will look like when the processor is
+writing to address 6000 so we need some
+logic that'll tell us if the address
+bits are set to these values and then if
+they are enable the chip select signals
+and by enabling the chip select signals
+that tells the 65 22 that it's time to
+pay attention to the data bus and the 65
+22 has actually two chip select signals
+and they both have to be active chip
+select one is active high and chip
+select 2 is active low which is
+indicated with the bar over it and
+actually if you look at the data sheet
+they don't have the bar they just have
+chip select one and chip select to be
+but the B at the end just means the chip
+select to bar so there should be a bar
+over it but I guess instead of drawing
+the bar they just put the B at the end
+but anyway that's what that means so
+like our WB is read and then write with
+a bar over it like that but in any event
+I'll just draw it with the with the bar
+like that to indicate that it's an
+inactive low so if we want to build some
+logic that will recognize when the
+address bits are set this way and then
+enable both of these chip select signals
+let's just actually just start with the
+first the first bits here so if we just
+look at the first two bits the first bit
+is a zero and the second bit so one so
+if we invert the zero and then just take
+the one and then and those together
+that'll tell us that the first two bits
+are set correctly and of course we could
+actually build something similar with
+with only NAND gates that would look
+like this where here this this top NAND
+gate is essentially inverting that zero
+so just like the inverter we just saw
+and then we're anding it with with the 1
+and then we get a 0 over here and
+actually we can feed that directly into
+the active load chip select 2 so chip
+select 2 here will will be active when
+the first 2 bits of our address are
+right then what we can do is we can we
+can feed this third bit at address 13 in
+directly into the chip select one
+because that's supposed to be a1 when
+when our address is at 6000 and so
+that'll be active and check if the third
+bit of our address is a1 and so just
+like this this will activate the 65 22
+when the first 3 bits are correct for an
+address of 6,000 but you might be
+wondering you know what about the rest
+of the bits how do we check if they're
+all zeroes because because the rest of
+these bits are all supposed to be zeros
+if if the processor is writing to
+address 6000 moves well you know it
+might seem strange but I'm actually not
+going to check those other bits at all
+I'm just going to ignore them so that
+means that this chip is actually going
+to be enabled for any address from 6000
+all the way through 7 FFF those are the
+addresses from 6000 through 7 FFF those
+are the addresses where those first 3
+bits are 0 1 1 and I know what you're
+thinking you know that seems horribly
+inefficient right are we really taking
+up you know over 8,000 addresses just
+for this one chip you know it seems like
+such a waste right but you know with
+engineering everything is a trade off so
+there's never like a perfect design
+because you know one factor that's
+always in play is cost and you know a
+big advantage of this design is that it
+just uses these two NAND gates and in
+fact you might have already spotted that
+that this NAND gate here is already in
+our circuit because we're using it for
+the chip enable for the EEPROM so we can
+we actually kind of use double duty on
+that so really you know this design is
+only adding a single NAND gate
+so yes we're kind of wasting you know
+8,000 addresses or whatever it is to
+activate this one chip but we're
+actually saving you know a whole bunch
+of logic gates because if we had to put
+logic gates in here to check that all of
+these bits were zeroes and and feed that
+into some logic that activated the the
+65 22 that would require a whole bunch
+of logic gates and so you know it's a
+trade-off that ultimately depends on
+exactly what we're building this for if
+we're trying to build something
+requires you know a certain number of
+addresses where we need you know a
+certain amount of memory or a certain
+amount of IO or something like that you
+know we might have to add that
+complexity to use our address space most
+efficiently but if we don't actually
+need all of that address space then
+maybe it makes more sense to accept
+something that you know kind of at first
+sight might seem like we're wasting some
+resource like addresses but really we're
+saving on the resource that really
+matters in our case which would be logic
+gates you know and that's hardware which
+yeah if you're designing a product that
+directly translates to cost and you know
+I suppose yes we're building this as a
+hobby or something so you might not care
+about that which you know fair enough
+but if you're interested in real-world
+engineering you're not always gonna have
+a luxury of prioritizing your your
+personal aesthetic of some ideal you
+know quote unquote design you know
+you're eventually gonna have to make
+trade-offs like this and one interesting
+factor of this design is if you wanted
+to add multiple sixty-five 22s
+which you know if you want to expand
+this you might want to do you could just
+use address 12 11 10 and so on and hook
+those up to the chip select one pin of
+the of the second or third or fourth 65
+22 so if you want to add more more i/o
+this design makes it kind of easy to
+expand still not efficient use of the
+address space but very efficient use of
+the hardware because you don't actually
+need to add any additional address
+decode logic but anyway let's start
+hooking this up I'll start by
+disconnecting the Arduino so you can see
+what's going on in here and I'll add the
+65 C 22 chip here and if we look back at
+the pin out here you can see that power
+and ground are VDD and VSS of pins 20
+and and 1 so I'll start by connecting
+those pin 20 is power 5 volts and then
+pin 1 is ground if we start with that
+address decode logic you can see that
+we've got the chip select 1 and chip
+select 2 that we're gonna hook up to
+this logic here and of course we already
+have this NAND gate hooked up here so
+we've got address 15 coming down that
+says green wire going into the two
+inputs of one of these NAND gates and
+then the yellow wire is the output here
+that right now is going to chip select
+for the ROM but we can also take that
+and bring it into another input for
+another NAND gate because this chip here
+has four NAND gates on it and that's
+actually why I used a NAND gate instead
+of an inverter here since we can use one
+chip that has 4 NAND gates on it to do
+to do both things so I'll connect the
+output of this NAND gate around to the
+input of
+another one of the inputs of another
+NAND gate on the same chip so that's
+this connection here and then we'll
+connect address 14 to the other input of
+this NAND gate down here address 14 is
+one of these is this address pin up here
+so there we go that's address 14 and
+that's going to come around and connect
+to the second input on this NAND gate
+then the output of this NAND gate is
+going to go to the chips lock to input
+of the 65 22 to the output of this NAND
+gate is this pin right here and then
+that's going to come around to the chip
+select to pin which if you look back at
+the pin out here chip select to is pin
+23 so that's this pin right here so now
+that 65 22 is only going to be enabled
+when address 15 is 0 and address 14 is 1
+because that's what this logic does next
+we're going to connect address 13 from
+the microprocessor over to the chip
+select one input of the 65 22 so address
+13 is also up here it's starting to get
+a little bit tight but let's see if I
+can get this in their address 13 isn't
+going to come down and connect to the
+chip select 1 pin and chip select 1 is
+pin 24 so right to the left of chip
+select 2 that's that one right there
+there we go
+so that's the address decode logic for
+the 65 22 but then we've got some other
+stuff down here we need to connect as
+well so if we look at what we've got
+down here we've obviously got all the
+data lines but we also have the read
+write signal and the clock signal this V
+2 and the rewrite signal is just the
+signal that comes out of the
+microprocessor that says if the
+microprocessor is reading or writing
+data to the bus because the 65 22
+doesn't just do output it does input as
+well and it has a bunch of other
+functions that the microprocessor is
+going to need to be able to either read
+or write from so we need this signal and
+the read write pin on the microprocessor
+is pin 34 here so that's right here and
+then the read write pin on the 65 22 is
+over here pin 22 so that's down here so
+let me try and sneak through here again
+there we go so we're connecting the read
+write pin here is that pin down to the
+read write pin here which is pin 22
+should be that pin there and then we've
+also got a clock pin so the clock signal
+on 6502 comes in here and remember
+that's where we've been connecting the
+the clock module here
+and that goes to the fee to clock pin
+here pin 25 on the 65 22 and that's
+right there and then one other signal
+that we actually do need to connect that
+I didn't draw on here is the reset pin
+so the 65 22 also has a reset pin and
+you know you would need to reset those
+65 22 before we start running any
+programs so what we can do is we can
+connect that reset pin up to our reset
+circuit here
+so that was pin 34 which is right here
+and I'll just connect that up actually
+to this side of the reset button and
+that's the same as up here which is you
+know this reset pin is normally tied
+high through this resistor but then when
+we push the button it connects it to
+ground over here so that's active low
+when we reset it and by connecting it
+down here both sides of this switch are
+just electrically connected inside the
+switch so this is this here is the same
+signal that the microprocessor is
+getting and then of course we need to
+connect all of our data pins we've got
+d0 through d7 so we just need to connect
+this data bus over to the data pins on
+the 65 22 so I'll start with d0 and
+connect that from the processor to the
+65 22 and then d1 d2 d3 d4 d5 d6 and d7
+and I'll just kind of clean all this up
+try to make it as tidy as I can it's a
+whole bunch of wires going everywhere so
+it's gonna be a little bit challenging
+but hopefully I can get this a little
+bit neater so you can kind of see what's
+going on here and there we go so that
+takes care of everything that we kind of
+drew out here but there are four more
+pins that we need to worry about and
+that's these register select pins so
+there's register select 0 1 2 and 3 and
+what those do is those are used to well
+as the name would imply select a
+different register because the 65 22 has
+16 different registers that you can
+address by using those 4 different
+register select pins and it's those
+different registers that allow the 65 22
+to do all the different functions that
+it has and for this video really the
+only thing we care about is the output
+register a and B because remember if we
+go back to the pin out here we've got 8
+bits here for Port a you know port a 0
+through 7 and then port B 0 through 7
+and the way that we output data to
+either Port a or port B is by using
+these register select pins here so if
+they're all zeros then we're outputting
+to register B if it's 0 0 0 1
+then we're outputting to register a but
+actually with the 65 22 that port a and
+port B can be used for input as well so
+they're their input or output and the
+way you tell it whether its input or
+output is with this data Direction
+register so there's a data Direction
+register for B in a data Direction
+register for a and you can write a value
+to those registers to tell it which bits
+of Port a are inputs and which bits of
+Port a are outputs and same for port B
+so so all 16 of these pins we can you
+know select individually to be either
+input or output and you do that with
+these data Direction registers so we
+want some way from the microprocessor to
+be able to set values into each of these
+different registers and the way I'm
+going to do that is by connecting these
+register select pins to the address pins
+coming from the microprocessor so that
+way you know we've got our address
+decode logic here that says enable the
+6520 to when were at address 6000 and I
+said we're gonna ignore the rest of
+these address pins so really it's not
+just address 6000 there's a whole bunch
+of addresses where where the 65 22 is
+going to be active and that's gonna
+include address 6000 where you know
+address 0 through 3 are all zeros but
+also 6,001 where the address 0 is a 1 or
+address 6000 to wear a dress 1 is a 1
+all right 6000 3 and so on
+so actually the way we're going to talk
+to the 65 22 is not only just an address
+6000 but six thousand one two three four
+five six seven eight nine ABCDE and F so
+we'll actually have sixteen different
+addresses that the microprocessor will
+be able to address by using both the
+decode logic here to enable the 65 22
+when we're kind of you know in in the
+right range but then also use these low
+order address bits to select the
+specific register that we want so for
+example if we want to set the data
+direction for the port B then we would
+write to address 6000 - and then you
+know once we've configured pork beef or
+output if we want to actually output
+something there well then we can write
+to address 6000 and it'll output to port
+B or 6000 1 to a port to port a so let's
+up that up address 0 I'll go to register
+select 0 address 1 order to register
+select 1 and rest - to register select -
+and address 3 to register select 3 and
+there we go so we've got our register
+select pins all hooked up we've got a
+reset pin hooked up we've obviously got
+all of our data pins hooked up
+we've got a clock pin and our two chip
+select pins and our read/write pin and
+that should be everything we need to get
+the 65 22 to work in terms of being able
+to output data on the port a and port B
+here but of course we actually want to
+see what's being output on port a and
+port B well let's hook up some LEDs so
+I'm just going to temporarily stick
+eight LEDs over here so we can just
+monitor you know eight of the output
+bits and then I'll connect a negative
+side of each LED to ground through a 220
+ohm resistor and you can tell the
+negative side of the LED because it's
+usually the one with the shorter leg and
+it's also the one with the flat side and
+the plastic and so then the positive
+side of the LED I'll just hook up to the
+eight pins of Port B which are pins 10
+through 17 so there we go so now if we
+write anything to port B we should see
+it latched on the output here and we
+should see that show up on the LEDs so
+now let's try to write a program that
+will output something to those LEDs and
+before I go too much farther with this
+what I'm gonna do is is gonna reformat
+this so instead of assigning each byte
+like this what we'll do is define an
+array up here and then we just list out
+the opcodes and everything for each
+instruction and so this is the same
+thing up here that I had down here so
+I'll just get rid of all this and now
+the ROM is going to be the code plus
+whatever padding is needed to get it up
+to 32,768 bytes and total length and so
+that's actually gonna be thirty two
+thousand seven sixty eight minus the
+length of the code and so far I haven't
+actually changed anything about how this
+code works it's still doing exactly what
+it was before so this first part up here
+these first two bytes this is
+essentially a load a of forty two hex
+and then this next line is a store a at
+address 6000 and so this is exactly what
+we had before haven't changed anything
+it's just a little bit more of a compact
+way to write it
+so as we write more code hopefully it'll
+be a little bit easier to follow but we
+don't want to start out by writing a 42
+to address 6000 because the first thing
+we actually need to do is set the data
+direction for the register so if we're
+port B which is what we're using the
+data Direction register is register
+number 2 so we want to write to register
+2 which will be able to get to at
+address six thousand two and the way
+this works is if we look at the how the
+data Direction registers work you can
+see that if we set a bit to one in the
+data Direction we're just
+that sets that pin for output and if we
+set it to zero that sets that pin for
+input right because port B itself has
+actually got eight pins here and we can
+set each of these pins each each of
+these eight pins for input or output
+individually now in our case we want to
+set them all as output so what we want
+to do for our direction is set each bit
+of the direction register to a 1/4
+output and basically what that would
+look like is the data Direction register
+B so at address 6002 we want to write
+something that's all ones which is going
+to be FF in hexadecimal and really we've
+kind of almost got the code here that we
+need what we just need to change is is
+load FF into the a register and I'll
+update the comment as well and then
+instead of writing that to address 6000
+we want to write that to address 6000 -
+and then of course the address is
+little-endian so it's going to be 0 2
+followed by 6 0 so we're loading FF into
+the a register and then we're storing
+that at address 6000 - and what that's
+going to do is it's going to put an FF
+in the data Direction register B to say
+that all of the pins for the B register
+are output now we can actually output
+something to the B port which is
+register number 0 so that's actually
+gonna be address 6000 and we can
+basically copy this same code so I'm
+gonna copy both of these lines and then
+change it so that we load some different
+value so perhaps I'll load 5 5 and then
+store that at address 6000 and I'll
+update the comments over here as well so
+by 5 and 6,000 it's now what this code
+will do is after it sets the data
+direction to output for register B it'll
+write a 55 hex to register B and 55 hex
+in binary is just going to be 0 1 0 1 0
+1 0 1 so it's just gonna alternate the
+LEDs on and off and if we want we can
+write different patterns so I can just
+copy this again and once it's written
+that 55 we can load in some different
+values so I'll just say a a which is
+also 1 0 1 0 1 0 1 0 but it's the the
+other one zero so it'll sort of flip
+flip all the bits and let me update the
+comment here as well and so then that'll
+change what's going out that port and
+change change what the LEDs are set to
+and so the next thing I'm going to do is
+is create a loop so that once we're done
+you know loading 55 and writing that out
+to the port and then loading a a and
+writing that out to the port what I want
+to do is is just have the program loop
+back up and write
+the 55 again and to do that we need
+another opcode we need the OP code for
+the jump instruction and there is a jump
+instruction here jump to new location
+and if we're going to give it a full
+memory address the OP code for that jump
+is for C so add another opcode here for
+C and then we have to give it the
+address to jump to and what I could do
+is I could do 0 0 8 0 and remember 0 0 8
+0 that's going to be interpreted as 8 0
+0 0 which is the start location of our
+program so this would actually jump
+right back up to the top of the program
+and just keep looping right so this is
+essentially a jump 8,000 but if we don't
+want to jump all the way to the top
+because we don't actually need to
+reinitialize the the port is output here
+and the first two lines here that's
+that's what they do is just initialize
+the port we only need to do that once so
+really we want to jump to this point
+here and so if this is at location 8,000
+in memory this will be 8,000 1 8,000 to
+8,000 3 8004 8005 so we could actually
+just jump to 8,000 5 so that's what I'm
+gonna do so this will be a jump to 8
+thousand five and that'll be our program
+and so this program is going to start
+out by initializing the the B port to
+all output and then it's going to write
+a 55 to the B port it's going to write
+an a a to the B port and then it's just
+gonna loop back up and write a 55 a a 55
+a and just continually go through a loop
+writing those two values flipping back
+and forth so let's save that and then
+flip back over and generate the ROM file
+by running it and we've got a syntax
+error oh boy
+and let's see what do we do wrong here
+nope did I forget a parenthesis I think
+I did save that and try again there we
+go and now if we do a hex dump we can
+take a look at our program and so here
+we have our program that a 9ff that's a
+load AFF and then this is our store a to
+6002 and then we have our load a of 55
+and then a store a to 6000 and then a
+load a of a a and then a store a to 6000
+and then for C is jump to 8,000 5 which
+should jump back to this location here
+and then the rest is all just padded
+with those EE A's no op instruction in
+this case we aren't actually gonna
+execute any of them because we're going
+to start here and then as soon as we get
+to the jump we're gonna we're gonna stay
+in the program here so we we actually
+could fill this with anything it does
+really matter and then of course here we
+have our reset vector that says hey
+start start executing at location 8000
+so that'll looks good so let's get the
+ROM out of here and reprogram it there
+it goes and that's done so put the ROM
+back in the circuit and then I'll need
+to hook the clock and power and
+everything back up in order for it to
+work and I guess I could also hook up
+the Arduino if we wanted to monitor step
+by step but you know what I'm gonna I'm
+feeling lucky so I'm gonna just power it
+up and see if it works so let's plug in
+power here and I'll start the clock and
+we may need to reset everything Hey
+there we go that looks like it's working
+that is exactly what I expect that
+program to do so it's writing the the 5
+5 and then the a a and 5 5 and a a so
+it's it's writing both of those it's
+obviously configured this port for
+output since it's outputting something
+and and the loop is working it's jumping
+back and repeating and of course if we
+did want to watch it step by step we
+could hook the the Arduino back up so
+let me let me actually do that just to
+show you so of course I have to hook up
+all 16 address lines and this is getting
+a little bit tighter a little harder to
+do now so those are the address lines
+and then next I'll hook up the data
+lines all eight of those and then we've
+got the read write line and of course
+the clock signal and then the Arduino of
+course needs its common ground
+so with that I'll power up the circuit
+reset it hold down reset and stop the
+clock so we can single-step everything
+so now it should be reset and if we go
+back to our serial monitor for the
+Arduino will clear the output and let's
+start single stepping so of course the
+first seven clock cycles are going to be
+the initialization so there we go and
+then the next two are going to read the
+reset vector so ffff C and F of FD we
+read that reset vector of zero zero
+eight zero which is really going to be
+eight zero zero zero so that's the next
+address we're going to go to
+so there's address 8000 and we're
+reading an A 9 which is the load a
+instruction and next we get F F so we're
+loading F F into the a register then we
+get the 8 D which is store a and the
+next two bytes will be the address to
+store 2 until we get 0 2 6 0 so it's
+going to store to address 6
+thousand - which will be the data
+direction register in the 6520 - chip so
+in the next clock cycle we'll actually
+see that store operation happen and
+there it is so we're writing now FF to
+address 6000 - so that should set that
+port to be all outputs so next you know
+we left off at eight thousand four so
+we're gonna read eight thousand five as
+the next instruction and there it is and
+here we're reading an a nine which is a
+load a again and in this case we're
+loading fifty-five into the a register
+then we get eight D for store a and so
+the next two bytes will be the address
+to store - and here we get zero zero six
+zero so that's a address six thousand so
+the next clock cycle here is going to
+write address six thousand and it's
+going to write the value fifty-five and
+of course when we do that that's
+actually setting that output port so we
+should see a right to address six
+thousand we should see the value
+fifty-five and then of course we should
+see the LEDs come on as soon as we do
+that and there it goes and of course you
+see the LEDs come on right away and
+here's that right so we're writing to
+address six thousand and we're writing
+55 and fifty-five in hex is the zero one
+zero one zero one zero one that you see
+on the LEDs and of course we can keep
+going because after this after eight
+thousand nine it's going to just keep
+going keep reading from eight thousand a
+is there gonna be the next address and
+there's a a nine AAA so that's a load a
+with an a a and then it's going to be
+store a zero zero six zero so it's gonna
+store that a a in address six thousand
+so here we're gonna see the LEDs flip
+there they go and now we see we're
+writing a a to address six thousand and
+then the next instruction here is for C
+and that's the jump instruction and it's
+jumping to zero five eight zero which is
+have you flipped that around it's eight
+zero zero five so then the next address
+we'll see it read from is eight thousand
+five and here it's doing that load a
+again and it's just going to keep going
+through their program so if we just let
+the clock run as we saw before the LEDs
+just flip back and forth so now I've got
+a computer working that we can program
+and it's got some i/o lines that were
+able to control perhaps in the next
+video what we can do is use those i/o
+lines to interface with a display module
+something like this and maybe actually
+be able to write that hello world
+program that I've been promising for the
+last two videos but in the meantime if
+you're interested in following along and
+building your own computer
+I've put together a kit on my website at
+eager net slash 6502 that you can get
+that's got all the parts
+or the final computer that we're
+building towards also there you can find
+information on the clock module I've got
+a kit for that as well as any other
+components that you'll need for this
+project
+you
