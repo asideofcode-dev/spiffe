@@ -45,6 +45,10 @@ Auto-generated YouTube captions for Ben Eater’s playlist
 
 Missing part 6: https://www.youtube.com/watch?v=i_wrxBdXTgM
 
+## Technical summaries
+
+- [SUMMARY-21-29.md](./SUMMARY-21-29.md) — dense WHAT/HOW for videos 21–29 (ACIA, Wozmon, BIOS, MSBASIC, IRQ buffering, sound)
+
 ## File format
 
 ```
