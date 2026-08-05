@@ -1,0 +1,24 @@
+Title: RAM and bus timing — 6502 part 6
+Video ID: i_wrxBdXTgM
+URL: https://www.youtube.com/watch?v=i_wrxBdXTgM
+Playlist: Build a 65c02-based computer from scratch
+Playlist URL: https://www.youtube.com/playlist?list=PLowKtXNTBypFbtuVMUVXNR0z1mu7dp7eH
+Source: UNAVAILABLE
+---
+
+Transcript not retrieved from this environment.
+
+YouTube returned only the public video description (no auto-caption body) for this video ID when fetched via available caption/page mirrors. Direct caption APIs (yt-dlp, youtube-transcript-api, timedtext) were blocked from the cloud IP.
+
+Description text that was available:
+
+Schematics, datasheets, kits, and more at https://eater.net/6502
+Support these videos on Patreon: https://www.patreon.com/beneater or https://eater.net/support for other ways to support.
+
+Part 1: https://www.youtube.com/watch?v=LnzuMJLZRdU
+Part 2: https://www.youtube.com/watch?v=yl8vPW5hydQ
+Part 3: https://www.youtube.com/watch?v=oO8_2JJV0B4
+Part 4: https://www.youtube.com/watch?v=FY3zTUaykVo
+Part 5: https://www.youtube.com/watch?v=xBjQVxVxOxc
+Part 6: This video!
+Part 7: https://www.youtube.com/watch?v=omI0MrTWiMU
