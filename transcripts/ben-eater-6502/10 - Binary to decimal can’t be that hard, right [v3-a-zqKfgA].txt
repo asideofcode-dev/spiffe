@@ -1,0 +1,1196 @@
+Title: Binary to decimal can’t be that hard, right?
+Video ID: v3-a-zqKfgA
+URL: https://www.youtube.com/watch?v=v3-a-zqKfgA
+Playlist: Build a 65c02-based computer from scratch
+Playlist URL: https://www.youtube.com/playlist?list=PLowKtXNTBypFbtuVMUVXNR0z1mu7dp7eH
+Source: YouTube auto-generated captions via videodb.org
+---
+
+converting a binary number like this to
+decimal you might think it's not that
+complicated each digit has a particular
+place value you can write those down
+here and in this case we've got a 1 in
+the twos place in the eights place and
+in the 32s place so if you add those up
+32 plus 8 plus 2 equals 42 so that's
+easy enough right well maybe for you but
+that's not how computers do it if a
+computer like this has a number in its
+memory and of course you know it's gonna
+be encoded in binary how does it turn
+that number into something like this
+that us humans can read and understand
+yeah I can't do the same thing we did
+because what would that even mean you
+know we just added up the place values
+to get 32 plus 8 plus 2 equals 42 but
+doing that assumes you know some
+familiarity with with decimal you know
+computer isn't going to look at 32 as 32
+it's going to look at it as 1 0 0 0 0 0
+and it's going to look at 8 as you know
+1 0 0 0 it's gonna look at 2 as 1 0 you
+add all that up and you get 1 0 1 0 1 0
+your braid back where you started so how
+does the computer do it how does it get
+this decimal number and by the way you
+know if you're envious of my extremely
+capable computer and its ability to
+display numbers you can build your own
+I've got a whole series of videos where
+I walk through building it with a 6502
+processor the ROM the RAM IO the display
+and everything and you can also check
+out my website where I sell kits with
+everything you'll need to to build your
+own but at any rate if you think about
+what a computer has to do to display a
+number like this as decimal it's got to
+come up with all of the separate digits
+of the number and in fact right now I'm
+totally cheating the code is literally
+printing the character 4 and then
+printing the character 2 so it's totally
+not reading the value of 42 from
+anywhere now you know I could make this
+a little bit fancier and print out
+zeroes for both of these and then add 4
+to this one and add 2 to this one
+because you know the character for 0
+plus 4 is gonna give us the character
+before the character for 0 plus 2 is
+going to give us the character for 2
+fact I could even represent the four in
+binary like this and that the 2 in
+binary like like that if I want to get a
+little even fancier and this is still
+gonna print out 42 but it's still not
+starting with the number 42 anywhere you
+know we've already done the hard part
+here of breaking up the four and the two
+as separate digits but maybe we can get
+the computer to do that you know one
+approach might be repeatedly dividing
+the number by
+and looking at the remainders so for
+example if we start with a number like
+17 29 let's say if we divide that by 10
+we're gonna get 172 and we get a
+remainder of 9 and if we keep dividing
+so we take the 172 now and we divide 10
+into that whole 10 is going to go into
+that 17 times and we're gonna have a
+remainder of 2 well now if we divide 10
+into 17 keep going here 10 is gonna go
+into 17 one time and we're gonna have a
+remainder of 7 and if we want to keep
+going we can try to divide 10 into that
+one of course 10 it's going to go 0
+times and we have a remainder of 1 but
+if you look at these remainders here we
+broke the original number 17 29 up into
+1 7 2 9 so that's great but there are
+just two problems you know first we're
+still working in in decimal here and the
+whole point is that we're gonna be
+starting with binary but you know we're
+just doing division so presumably if the
+computer wants to divide numbers it's
+gonna you know it's gonna do it in
+binary and work just fine except that's
+the second problem the computer doesn't
+actually know how to divide the only
+arithmetic instructions that the
+computer knows about are adding and and
+subtracting and that's basically yet I
+guess there's also increment and
+decrement but basically all the CPU can
+do is add and subtract
+but fortunately turns out that doing
+division in binary doesn't actually
+involve doing much division yeah and
+I'll show you what I mean let's say
+we've got this big long binary number
+here this is a 16-bit number and we want
+to divide it by 10 well 10 is 1 0 1 0 in
+binary so we want to do this division
+problem and if you've ever wondered you
+know what am I ever gonna need to know
+how to do long division well you're in
+luck because we're going to do some long
+division and so if you remember the way
+that you do long division is you try to
+find you sort of work your way left to
+right here so we're trying to divide 10
+or 1 0 1 0 into here somewhere and the
+first place it divides is actually right
+here this one 1 0 1 and so it goes into
+that one one time and if you're you know
+if you remember how to do long division
+you got to make sure you can keep
+everything lined up because it's all
+about place value and then we multiply
+so 1 0 1 0 times 1 is it going to be 1 0
+1 0 and then the next thing we do is we
+subtract so 1 minus 0 is going to be one
+that's easy enough zero minus one's a
+little harder we've got to do some
+borrowing so what we'll do is we'll take
+this to zero and then we'll borrow a 1
+over here so
+now we have 1 0 of minus 1 so this is
+effectively 2 minus 1 so 2 minus 1 is
+going to be 1 and now we have 0 minus 0
+is 0
+1 minus 1 is 0 all right so easy enough
+the next thing we're going to do is
+we're going to bring down the the rest
+of this here so we bring down this 1 we
+bring down the zeros and this final one
+so now we've got this new number and
+down here that we're trying to divide in
+2 and so again we kind of keep going
+along looking for somewhere where you
+can divide the 1 0 1 0 into it and the
+first place that's going to going to go
+in is is this 1 1 1 0 and so 1 0 1 0 is
+going to go into 1 1 1 0 1 times so I'll
+put a 1 up there and then we'll subtract
+so 1 0 1 0 times 1 is 1 0 1 0 and
+subtract that off and so 0 minus 0 is 0
+1 minus 1 is 0 1 minus 0 is 1 and then 1
+minus 1 is 0 and actually you know as we
+as we go along here we could fill in
+some zeros up here but then again you
+know the next step is to is to bring
+down the rest of this so we'll bring
+down these zeros and look for the next
+spot that 1 0 1 0 divides into it and
+actually it's gonna be this here and
+it's going to divide into that one time
+so I'll put another one up here and then
+multiply that 1 times the 10 and do
+another subtraction so 0 minus 0 is 0 0
+minus 1 we're gonna need to borrow again
+so this is actually going to become a 2
+so 2 minus 1 is going to be 1 1 minus 0
+is going to be 1 1 minus 1 is 0 and then
+of course this went to 0 because that's
+where we borrowed so we're left with
+with this bit here and then next we can
+start to bring down the rest of it and
+our 1 0 1 0 is going to go into 1 1 0 0
+1 times so I'll put a 1 up there put our
+1 0 1 0 down here and subtract again so
+0 minus 0 is 0 0 minus 1 we're gonna
+need to do a little bit of borrowing
+here so so 2 minus 1 is 1 0 minus 0 is 0
+0 1 minus 1 is 0 ok we are almost done
+so now we bring down our 0 1 and
+actually we are completely done because
+1 0 1 0 does not go into 1 0 0
+so if we put in the rest of our zeroes
+up here this is the result of our
+division problem so we divided this big
+long binary number by ten or one zero
+one zero and we got an answer but of
+course we're interested in the remainder
+and the remainder down here is this
+little bit and that's going to be one of
+our digits in fact that's going to be
+the first digit here which is a nine so
+this is actually a nine in binary so
+we're kind of seeing the same thing here
+and then this number up here if we were
+to sort of decode that we'd find it's
+172 but now we need to do the next step
+here and that works just the same way so
+if we take this same number over here
+and divide it by ten again you know we
+can keep going with this process this
+goes in one time one zero one zero
+subtract that one one zero zero bring
+that down one zero one zero goes in
+there one time subtract that fill in
+some extra zeros up here and now we get
+a result of dividing that and our
+remainder down here now is a two so this
+was a nine remember now we have a
+remainder of 2 in binary of course and
+then the next thing we wanna do is would
+take this and divide it by 10 again so
+here it is and these problems are
+becoming a little bit easier and
+actually only goes in one time and if we
+subtract off that one zero one zero one
+minus zero is 1 0 minus 1 we need to
+borrow so this becomes a 1 this becomes
+a 1 that becomes a 0 so we borrow 2
+minus 1 is 1 this is a 0 this is a 0
+this is a 0 so we have a remainder now
+of 3 and we're left with 1 and we can do
+the final division where we divide 10
+into 1 and of course 10 doesn't go into
+1 at all so that's a zero if we subtract
+you know we're going to end up with a
+remainder of 1 and so our final
+remainder is a 1 and it looks like I
+probably did something wrong here
+because I'm expecting 1729 and I got
+1329 so I probably did something wrong
+here let me take a look and see you
+probably noticed it already so of course
+there it is
+so this we borrowed a 1 so that was
+actually 1 minus 0 this should be a 1
+and then of course one one one is not
+three it's seven and so we can do all of
+these operations in binary which is
+great we end up with you know if we're
+looking at the remainders we get
+seventeen twenty nine which is the
+actual number that we started with over
+here 17 29 and binary but again all of
+this assumes that we can do division but
+I hope what I was kind of trying to show
+here is that we were able to do the
+division without really doing division I
+mean at no point were we really dividing
+anything it was mostly a subtraction
+which is good because that's what our
+computer can do it can do addition and
+subtraction and not a whole lot else but
+how do we actually translate these
+division problems into assembly code
+that can run on a computer well let me
+actually show you a different way of
+representing these exact same division
+problems in a way that that is actually
+to be easier to for the computer to do
+and to make this a little bit simpler to
+see I made this little simulation of the
+algorithm that we can sort of step
+through so what what I've got here is if
+you look at these sixteen and digits
+over here on the right that's the number
+we're starting with and what I've done
+is I've added another 16 digits over
+here to the left of it and then I've
+also got this the 17th digit out here
+which is the carry bit and you'll see
+how that gets used here in a minute and
+if you think about what we're doing with
+long division we are essentially taking
+this one zero one zero we're kind of
+sliding along here looking for a spot
+where we can divide it in and another
+way to think of that is to think about
+sliding this this number here to the
+left and so that's what we're going to
+do is we're gonna do a rotate left
+operation which is something that is
+very easy to do in the cpu you just
+shift all the bits to the left and then
+what we want what we're gonna do is
+we're gonna look at you know by rotating
+the left what we've done is we've pushed
+the first bit which was a zero into this
+this left half here where I've got 16
+bits and we can use those 16 bits to
+kind of look at you know ok does 1 0 1 0
+divided into 0 of course you know the
+answers could be no but we can try that
+by subtracting so what we can do is we
+can do a subtract with carry and what
+we're gonna do there is is it'll set the
+carry bit and then we'll try to subtract
+1 0 1 0 from whatever we've got in here
+and by setting the carry bit that gives
+it something to borrow from so we're
+gonna try to subtract from
+zero so it's gonna need to borrow and
+you know it's gonna keep needing to
+borrow until it gets out here and then
+it has a bit to borrow from and so the
+result is gonna be a whole bunch of ones
+that had to be borrowed and then and
+there's some stuff over here but the
+nice thing about this is we can then
+look at the carry bit and see like did
+we need to borrow something and in this
+case yes we did and by looking at that
+we know that okay well if we had to
+borrow something then we weren't able to
+actually we had to borrow something from
+all the way over here I guess I should
+say then we weren't really able to
+subtract 10 from this number we weren't
+able to subtract 10 from 0 or we ended
+up with a negative number I guess it's
+another way to look at it and so because
+of that we can say well ok 10 didn't go
+into 0 you know no surprise so we'll
+just ignore this result and we'll repeat
+the process so we'll shift this over
+I'll subtract 10 again we get kind of
+the same thing because we're still
+tracking 10 from zero so we'll just
+ignore that result and we'll keep
+shifting this over subtracting now it
+didn't work
+rotate left subtract didn't work rotate
+left subtract that didn't work
+rotate left now let's get a little bit
+more interesting cuz now when we
+subtract we're subtracting 10 from 1 is
+still gonna be less than 0 didn't didn't
+we didn't get anything so we're still
+gonna ignore that but at least we're
+getting a different answer now we've got
+three here so we subtract 10 from 3 and
+it's still not gonna work now we've got
+6 so 6 minus 10 still negative but now
+things get interesting because we've got
+13 here all right 1 1 0 1 is 13 we're
+gonna subtract 10 from that and when we
+subtract 10 from it we get 3 and the
+other thing we get is we is the carry
+bit that we that we put in here doesn't
+get borrowed from and so we can look at
+this carry bit we can say yeah our
+subtraction worked in the sense that we
+got a positive number and since really
+what we're trying to do is division
+we're trying to see does 10 go into 13
+well yes it does it goes in one time
+which you know it's binary to use we're
+gonna go in 0 or 1 times so this tells
+us that yes yes it goes in I mean it
+goes in one time and that's sort of what
+our carry bid is telling us and then
+when we do the subtraction we get 0 0 1
+1 so we're basically this step of of our
+of our long division so the next thing
+we're gonna do is we're actually we want
+to start now looking we don't wanna look
+up here anymore
+we want to do that subtraction we
+it we want to bring down the rest of
+this because that's the next step we do
+if we're doing long division was we
+bring this stuff down and then start
+trying to divide into into this number
+here so in this case instead of bringing
+it down you know because we're kind of
+working with this 32 bit this 32 bit
+thing in memory here what we can do is
+we can just copy this or store this
+result back up into the left half here
+so we'll take all these zeros with the
+one one with the three here and we'll
+just put that up here into our result
+there we go and so now you know
+essentially we're kind of looking at
+this row here and continuing with our
+long division by looking at okay where
+does 1 0 1 0 go into this so we'll
+rotate I've got a 7 here 10 doesn't go
+into seven we'll ignore that rotate
+again we've got 14 10 does go into 14 so
+when we subtract we get four and we
+didn't use our carry bits so we know
+that it actually went in so in this case
+again we're going to hang on to this
+result so we're going to put this result
+back up here so we'll do that store it
+up there and now if we look at what
+we've got here we're kind of down on on
+this row here right we've got 1 0 0 0 0
+0 0 1 right and we'll keep moving along
+so we'll rotate left we've got an 8 10
+doesn't go into 8 so we ignore that
+we'll shift again we've got 16 10 does
+go into 16 if we subtract we get 6 and
+so we'll hang on to that so that's that
+this subtraction here and I guess the
+other thing to notice is you know we've
+been kind of looking down here but we
+also want to record the result of our
+division but the neat thing about this
+algorithm is that every time we're able
+to successfully subtract something we
+wind up like this with a 1 in the carry
+bit and so when we do that rotation that
+one ends up getting pushed in over on
+this side here so as we're kind of
+moving through our original number you
+know shifting this over the answer is
+sort of popping in here behind it so
+we've got a you know 1 1 0 1 0 1 already
+in there we've got a couple more digits
+to go so let's keep going so we've got 1
+1 1 0 that's here so we're going to do
+this subtraction we get 1 0 so we'll
+store that result we'll push this one in
+over here so now we've got
+this one zero one zero one one part of
+our answer and then we'll do another
+attempt to subtract can't subtract
+ignore that we'll rotate again try to
+subtract not able to subtract so we'll
+ignore that and at this point we have
+we've shifted sixteen positions so we've
+shifted the entire number all the way
+through that's with this little counter
+here that says 16 is and so once we've
+done that we know that we are done with
+our division and if we look here we have
+one zero zero one and that is our
+remainder so we've got a remainder over
+here and once we shift that last zero
+over here to this side we get the answer
+to our division problem over here on the
+right and the cool thing about that is
+because our answer is over here on the
+right we're all set up to do the next
+division problem
+so we've recorded our 9 our remainder so
+we can clear that out and we're set up
+to do the next division problem and so
+if I just go power through this we can
+just go through all 16 steps and it's
+doing the same thing that we're doing
+before now we're finally getting in into
+something here so the 1 0 1 0 minus 1 0
+1 0 equals 0 that's this first
+subtraction so we'll store that and we
+get our first one going in over here and
+then I'll just keep going nothing's
+happening nothing's happening we get to
+we get to the last spot here and there's
+our remainder
+so our remainder is 1 0 that's that's 2
+in decimal so we've got our remainder so
+if we do our final rotation then that
+one goes in over here and we've got our
+answer so we were able to get the
+remainder as 2 and now once we clear out
+that remainder we are set up and ready
+to go with the third division problem to
+get our next digit and so we're still
+going to go through all 16 bits now the
+first bits are zeros so though they
+aren't very interesting but we will
+finally get all the way to the end here
+where we get to 16 and here's the
+subtraction that we actually ended up
+doing here and the computer did it right
+go figure and it gets a 7 and so we'll
+store that and there we go we've shifted
+all 16 so this is our remainder of 7 so
+we could keep track of that there and
+then we do the final row
+to put the last bit of our answer in
+over here and if we wanted to we could
+do this last problem here which is not
+gonna be very exciting but just to show
+that the same algorithm works if we
+shift through this 16 times I'm gonna
+get a whole bunch of zeros and then
+eventually it gets to the end and we
+subtract we still get another 0 but
+we've been through 16 times so we know
+that our remainder is 1 and so that's
+our final digit and then if we do that
+last push to push that 0 and over here
+we have all zeros over here and so
+that's actually kind of how we know
+we're done so by going through this
+fairly straightforward algorithm that
+only uses 4 bytes of memory plus the
+carry bit we were able to you know
+through the course of that with maybe
+some communal basic conditional logic we
+were able to pick out the digits of the
+original number 9 2 7 & 1 and we just
+need to flip the order around I guess
+and hopefully you can see how this
+algorithm that I just stepped through is
+doing effectively the same thing as the
+long division is just that you know
+instead of writing everything out
+showing them showing our work I guess
+we're able to kind of do it all in a
+very compressed amount of memory and
+we're also able to do it with things
+that we know that the CPU is able to do
+you know rotate left subtract you know
+conditionals based on whether the carry
+bit is set or not those are all things
+that we're able to do with our CPU so
+let's let's actually try to translate
+this algorithm into code so this is the
+program I was running before that's
+totally cheating just writing the four
+the two separately but the rest of this
+should look fairly familiar if you've
+been watching some of the other videos
+in this series and I started out by
+resetting the LCD display actually at
+this point as soon as the LCD is
+initialized then we jump into this this
+infinite loop here so we'll add some
+additional code here to actually do what
+we want to do blow here I just have a
+bunch of subroutines for for printing
+stuff to the LCD sending instructions
+and so forth again if you've watched
+some of the previous videos this should
+this should all look familiar but now
+what we need is we need some space in
+memory to store the this data and we've
+got two 16-bit values this is actually
+going to be a total of 4 bytes in memory
+that we need to store and we can't just
+store these things in cpu registers
+because there there aren't enough CPU
+registers to store all this so we do
+need to put this in RAM somewhere and on
+this computer the rain
+is everything from address zero all the
+way up through address three FFF so we
+just need to allocate a couple spots in
+memory for the data we want to store so
+we have the value itself and I'm going
+to store that at address zero two zero
+zero and that's going to represent this
+this right half here that's going to be
+the value and then we also need this
+left half and and I'm gonna call this
+just the mod ten because that's what it
+sort of becomes once we apply this
+algorithm so put mod ten at address zero
+two zero two actually right because each
+of these has two bytes so value is going
+to be zero two zero zero zero two zero
+one mod 10 will be zero to 0 to 2 and 0
+to 0 3 and so maybe I can just add all
+come in here to say that each of these
+is two bytes so once I have that memory
+allocated let's go down here to where
+we're actually going to be doing stuff
+and and initialize it oh and I guess one
+other thing I need is I need the actual
+number so at the bottom here so we have
+our infinite loop that's how we're going
+to help the computer when we're done but
+down here and this at this point we're
+in ROM I can put the the number that we
+actually want to convert so just say
+number is a word and we can use that
+1729 example again and I guess it's
+silly I'm typing it in here as decimal
+and of course the assembler is gonna you
+know turn that into the binary image
+that we put on the ROM and so it'll be
+binary on the ROM and we're just going
+through all this effort to convert it
+back but but anyway that's the the
+number that will convert we'll have that
+in ROM and when we first start out what
+we want to do is we want to copy that
+number into RAM where we can start to
+manipulate it so what I'll do is I'll
+just load the number into the a register
+and then store that as the value and
+then load the second byte of the number
+because it's about two bytes 16-bit
+number into the a register and store
+that into the second byte of the value
+in RAM so now we've got our number in
+RAM so that's the the right half here so
+we've got that all set up there and now
+the left half we want to initialize that
+to zero so we'll load a zero into the a
+register and then store that into the
+mod 10 that's the the left half as well
+as mod 10 plus 1 which is the the second
+byte of that left half so now we're set
+up like this we've got our value in
+memory here we've got all zeros over
+here the first thing we're going to do
+is we're going to do this rotate left
+right so we want to rotate all of this
+to the left through the carry bit
+and we can use the carry bit to do that
+because we actually need to rotate each
+byte there's actually four bytes in here
+so if we rotate the first byte over here
+this will be the first byte of our value
+we rotate that left then it'll take the
+carry bit put it in on the on the right
+side rotate it left and then the
+leftmost bit will go back into the carry
+bit then if we rotate for the second
+byte of the value then that will take
+the carry bit put it in that and then
+the leftmost bit will pop out into the
+carry bit we could do that again for the
+value and if we do all four of those
+that'll rotate this whole thing just as
+we've been kind of looking at here in
+this in the simulation so the way that
+looks is we rotate left the value and
+then we do the same thing for the left
+half of the value and then the carry bit
+coming out of the left half of the value
+goes into the right half of 5 10 and
+then that's going to rotate into the
+left half of mod 10 and so doing all
+that is going to do this rotate left
+it's rotating all of these things left
+with the leftmost bit going into the
+carry bit at the end and with the carry
+bit going in to the right at the
+beginning I guess I could start adding
+some comments here just so we know
+what's going on here so the first thing
+we're doing here is we're initializing
+value to be the the number that we want
+to convert and then here we're just
+initializing the remainder to be 0 and
+then here are a rotate here we wrote
+we're rotating the quotient and the
+remainder just like we saw so now the
+next thing we want to do is we want to
+subtract 10 from the the mod 10 part of
+this over here so this left this left
+half which I'm calling mod 10 we want to
+subtract 10 from that and of course
+we're dealing with an 8-bit processor so
+we can only subtract from 8 bits at a
+time so we're going to need to use the
+carry bit again so we'll set the carry
+bit because we want to know if we had to
+do a borrow and then of course we're
+gonna do a subtraction we have to do
+that in the a register so we'll load the
+value from mod 10 into the a register
+and so that's the right half of this
+left part here so it's going to load
+these 8 bits here into the a register
+which you know for the first example
+here's all zeros and we're going to
+subtract with carry of 10 so we're gonna
+subtract 10 from whatever values there
+and so they'll give us this part of the
+answer but now we still need to do the
+rest of the subtraction over here on the
+left
+so let's actually take the answer that
+we've got in the a register and put it
+somewhere else
+so I'll transfer from the a register to
+the Y register that way we can kind of
+save the low byte of the subtraction in
+the Y register and then we'll load the
+high byte that we're subtracting from
+into the a register and do another
+subtract this time we're subtracting
+zero you know because we subtract the 10
+over here but if we're looking at what
+we're subtracting over on this side you
+know implicitly these are just all zeros
+in here so we're subtracting you know
+zero from whatever's in the top and then
+the result of that is going to end up in
+the a register down here and so once
+we've done that we'll have our answer
+basically in a combination of the a
+register and the Y register so if I want
+to add a comment here the a and Y
+register together now have the contents
+of the dividend minus the divisor so
+it's the result of that subtraction
+ocher that we're doing so now at this
+point what we want to do is we want to
+say well you know in this case we want
+to ignore the result but we want to
+ignore the result because the the carry
+flag ended up being cleared so we could
+because we had to borrow in order to do
+this subtraction which means that the
+dividend is less than the divisor so we
+subtracted we would have gotten a
+negative number so we need to we need
+some conditional logic but the
+conditional logic is going to be based
+on the carry flag so if our carry flag
+is clear like it is here then we want to
+ignore the result and we can do that
+with the branch of carry clear
+instruction so we're on a branch if the
+carry is clear to to somewhere else so
+we can do branch of carry clear ignore
+result so this is where we're branching
+with branching if the dividend is less
+than the divisor and we're going to
+branch to ignore result which will be
+down here but if we don't want to ignore
+the result then what do we want to do
+well in that case that means that we're
+in one of these situations where when we
+subtracted we actually got a positive
+answer so let's do this subtraction here
+we subtract we get three so here that
+the carry is not clear so we're not
+going to do that branch of carry clear
+so what do we want to do in this case so
+in this case we want to take the result
+that we have which again is in the a
+register and Y register and put them
+into this mod 10
+in up here well put that up here so we
+can store the contents of the why
+register in mod 10 and store the
+contents of the a register in mod 10
+plus 1 so that stores you know this this
+dividend minus divisor that result which
+is in a and why it stores you know a and
+why into the mod 10 part of our memory
+of course if our dividend was less than
+divisor then we just skipped that we
+skip over that we come down here to
+ignore result but then either way once
+we've either ignored the result or in
+this case stored the result the next
+thing we want to do is basically just
+repeat that we want to do another rotate
+left we want to do the subtraction again
+we won't do everything again so at this
+point what we need is a loop and so what
+we can do is we can go all the way up to
+the top here where we started so let's
+see this is our initializing our display
+we don't want to reinitialize the value
+we certainly don't want to reinitialize
+the remainder to 0 but right here right
+before we do the the rotate we want to
+start a loop so we do that by just
+putting a value in the X register which
+we're not using yet we could put 16 in
+the X register and then what we'll do is
+we'll just decrement every time through
+the loop so put 16 the X register and
+then we'll start our loop right here and
+then at the bottom once we either store
+our result or we jump past the storing
+the result and ignore the result either
+way we then want to decrement X because
+it starts at 16 we're going to decrement
+it all the way down to 0 and once it
+hits 0 then we want to stop this loop
+but otherwise we want to just jump back
+up to div loop and I'm going to use the
+the be any or branch not equal
+instruction because the way that works
+is it branches if the zero flag is not
+set and so if we decrement X and it's
+not 0 then we'll then we'll loop back up
+here to div loop and we'll go through
+this process again and we'll go through
+the process 16 times because X is
+starting out at 16 I guess one other
+thing that we should do here to
+initialize before we get into the loop
+is to clear the carry bit because when
+when we start out everything is is
+cleared in fact maybe that's maybe
+that's sort of more part of initializing
+the remainder so we loading a 0 into
+that mod 10 mod 10 plus 1 we also want
+to clear the carry bid make sure that 0
+before we start but then you know we got
+16 in here we're going to go through
+this loop 16 times and then either store
+the result or ignore there is
+based on whether the dividend was less
+than the divisor so that's just doing
+what this model is doing it's going to
+go through it 16 times and so when we
+get to 16 we're gonna do that that final
+subtraction in this case we're going to
+ignore the result so that would be that
+branch if carry is clear to ignore
+result and then after we ignore the
+result we throw that away this is the
+state we're in now at the end of that
+loop of going through 16 times and here
+we have we have our digit our first our
+first digit here so if we want to output
+that remainder we can do that right here
+so the remainder is going to be in in
+that lower half of the mod 10 variable
+so if we do load a mod 10 that's going
+to get that into the a register and of
+course this is just going to be a binary
+number from 0 to 9 that'll be the digit
+we want if we want to display that as an
+ASCII digit kind of like I was doing
+before we need to add the value of an
+ASCII 0 to it so we could add the value
+of a 0 to the a register and actually
+this is an add with carry so we want to
+make sure we clearly carry but before we
+do that adds so we get the right result
+and so now we're gonna have an ASCII
+number from 0 through 9 in the a
+register and we could just jump to our
+subroutine to print that character and
+that'll put that on the screen so now
+that we've got this value the next thing
+we do is we do another rotate so we need
+to do one final rotate to get the carry
+bit back around here because we don't
+quite have our answer yet we've got that
+one last result bit that needs to be
+rotated in over here on on the right in
+this case it's a zero but it could be a
+1 so we'll rotate that in and now we
+have our answer right that's the actual
+result that we're trying to get so when
+you do one more rotate all the way
+actually we have to be careful we do
+that before we do this clear the carry
+bit because the thing we're rotating in
+is the carry bit so we we want to rotate
+the carry bit in before we before we
+clear it here and also hopefully without
+mucking up our mod 10 but we should be
+able to do that because if we rotate the
+carry bit into the bottom of value
+that's not going to mess with mod 10 and
+then we need to continue that rotation
+into into the top half of value but if
+we stop there then we won't we won't
+actually rotate anything extra into mod
+10 so mod 10 we'll still have our answer
+and then we can clear the carry bit and
+we can do our add to convert that to an
+ASCII
+character from 0 to 9 and print
+everything and that should and that
+should work out fine so at this point if
+we halt the program it's just going to
+print one digit and of course we would
+like to print the entire number but you
+know everything's set up we can do
+another division problem we just have to
+have some sort of loop that takes us
+back to the right place
+where we can where we can set up our for
+our next division problem and you know
+we we obviously don't want to rewrite
+this part here but we do need to clear
+the remainder so right now our remainder
+is you know it's got some stuff in it
+and we want to set that to all zeros and
+we got the code for that already we just
+need to jump back up there so the spot
+we need to jump back up to is right up
+here where we initialize the remainder
+to zero so this is where we do another
+division problem so we want to jump up
+to divide down here at the bottom but we
+only want to jump up there if we're not
+done we don't want to just keep going up
+there forever so how do we know that
+we're done well we're done when the
+result of our division problem is a zero
+right because when we when we divide and
+we get a zero of course the remainder is
+gonna be the last digit we're looking
+for but the results going to be a zero
+that's how we know we're done because
+all these other cases the result is you
+know it's something else and we feed
+that into the next division problem in
+the next division problem but then when
+we get a zero that's how we know we're
+done so we want to check to see if the
+result was zero well the result is going
+to be in this value here so we just need
+to look at the two 8-bit chunks of that
+and if any of those bits are set to a 1
+then we know we're not done we want to
+jump back up to that divide label oh I
+just added so the value is not zero we
+want to continue dividing and to figure
+that out we could load value into the a
+register but we also need a look at
+value plus 1 because I want to look at
+all 16 bits of the value and all we care
+about is whether any of the bits are
+said so if we just or the a register
+with the top half of value so
+essentially we're doing a bitwise or of
+the bottom half of value and the the top
+half of a value we're ordering those
+together if any bits in either the top
+half or the bottom half are set then the
+value and the a register will have some
+bits set but if if all of them are zeros
+then the a register is still going to be
+a zero at this point and so we could use
+that to say you know branch not equal so
+branch if if the a register is not equal
+to zero effectively then then branch not
+equal up to divide you know so in other
+words if value all 16 bits of it
+is not 0 then we go back up to our
+divide up here which we will initialize
+the remainder to 0 will load the X
+register with 16 again so we'll go
+through 16 iterations of our division
+loop which which will just go ahead and
+compute the the next value and so once
+it goes through 16 iterations of that
+division loop then it's going to print
+out the the next character which is
+going to be a 2 that's the next result
+that we're going to get and then rotate
+that last bit in and then we're set up
+for the next division problem and it's
+going to keep going until we end up with
+all zeros here like we saw before so if
+I didn't make any mistakes hopefully
+this will do something that will print
+out the the number that we started with
+the number again is you know 17 29 I
+just have that defined here in ROM to
+start with so let's save that and I'll
+run the assembler and I'll go ahead and
+write it to the EEPROM and now let's
+give it a try but the EEPROM backing our
+circuit power this up reset and well
+that's almost the right answer you know
+we wanted 1729 but we got 92 71 and of
+course that makes a ton of sense because
+we're calculating these backwards or hey
+we calculate the nine first so there it
+is we then we calculate the two then we
+calculate the seven then we calculate
+the one so it's printing them in reverse
+order so our next challenge will be to
+flip those around so what I'm actually
+going to do is I'm going to create a
+string that will build one character at
+a time and the string is going to be in
+memory and if you've watched my videos
+on writing a hello world program you
+know that I ended up using a string that
+had a string hello world in it and I was
+able to print that out pretty easily
+well it took nine videos but I was able
+to print that out but this time I don't
+want the the message to be in ROM I want
+the message to be in RAM so I'll create
+another variable here and I guess this
+could be up to six bytes long because
+you know we're working with a 16-bit
+number so it could be as high as six
+five five three five which is five
+characters plus a null termination so
+message could be could be up to six
+bytes but it starts at zero to zero four
+and RAM and we want to initialize it and
+I guess we can initialize it up here and
+what a store is 0 in the first byte of
+the message
+it's a null-terminated string so if we
+just store a zero at the first position
+then it'll be an empty string and then
+what we want to do is instead of
+printing a character
+wherever the point is down here where we
+normally would print the character
+instead of doing that what we want to do
+is is basically push the character on to
+the front of our string so instead of
+print care we'll say push character and
+then I need to actually I need to
+actually write that so push character
+will be a subroutine that will write and
+can put that down here so what do we
+want to do here well when we're coming
+to the subroutine we're gonna have
+character in the a register and we want
+to take whatever that character is
+that's in the a register and want to add
+it to the beginning of the
+null-terminated string that is that is
+pointed to by by message or the team in
+memory I've got the message location we
+just defined at the top and so to do
+that we're gonna have to kind of go
+through message and move each character
+over to make room and then put the the
+new character at the beginning so since
+we're gonna need to move a bunch of
+characters around before we get to the
+point where we can put the new character
+at the beginning let's start by pushing
+the new character on to the stack so
+we'll push a on to the stack so the
+character that's now going to be the
+first character of this try to push that
+on the stack because we need to come
+back and deal with that later tell me
+what we don't do is basically just go
+through and loop through the the message
+and move each character over one I'll
+start out with a counter Y and start
+that at zero and that'll be the index
+into the message so then we can load the
+the first character or I guess the Y
+character of the message because this is
+eventually gonna be a loop we can load
+that into the a register and then
+transfer a into the XYZ store so
+basically we're going to get a character
+from the string and put that into the X
+register then we can pull the character
+off the a register so that that's the
+new first character we can pull that off
+the a register and put that as the first
+character of the string so now we've
+we've taken the the original first
+character from the string put that in
+the X register and now we're replacing
+it with the the new first character that
+we want to push onto the beginning of
+the string
+so once we've replaced you know the
+first character of the string with the
+new first character we can increment
+to move to the next character so now
+we're moving to the next character and
+we we have the new character that we
+want in that next position that's
+already been pushed on the stack so
+we're kind of ready to go into a loop
+here actually we're not quite ready yet
+because we need we don't have it on the
+stack yet because we have the character
+that was the first character we have
+that now in the X register so we know we
+want to do is we want to put X back in
+the a register and push that onto the
+stack so there we go now we've got the
+character that was at the beginning of
+the string on the stack and the
+character that was on the stack is now
+the one at the beginning of the string
+and so now we can go through this loop
+we've already incremented Y and here
+because we did this push a if a is 0
+then we know we've gotten to the end of
+the original string because this is a
+null terminated string so we can do a
+conditional branch here to jump back up
+to the beginning of our loop all right
+so we're initializing our Y counter to 0
+and we've got this loop we're going to
+go through this loop until the value
+that we pull off the beginning of the
+string is a 0 and then we're going to
+drop out of the loop but otherwise what
+we're doing is we're going through this
+loop and then each character in the
+string is getting pulled off eventually
+pushed onto the stack and we're taking
+whatever was on the stack and putting it
+as the new character in the string and
+so there and this is going to have the
+effect of sort of shifting everything to
+the right in the string and then adding
+the whatever we entered the push
+character subroutine we're gonna add
+that as the new first character at the
+very beginning of the string so at this
+point at the end of the loop we've
+shifted everything along we've gotten to
+the end we we still have the null
+terminator for the string that's still
+on the stack so we can even pull that
+off into the a register and then add
+that to the very end of the string so
+that way we have the null back at the
+end of the string so we're coming out of
+this subroutine with us with a null
+terminated string the only thing we've
+we've done is we've just added the new
+character to the beginning of it so we
+can return from subroutine and that'll
+bring us back up to
+here where we call this push character
+and so now when we get to the end right
+before we would go into this infinite
+loop we now have this message that we've
+created which is a null terminated
+string that has the ASCII representation
+of our decimal number and so now we just
+need to print that I'm actually gonna go
+ahead and open up the old hello world
+program because that's already got the
+code in it too to print the message
+right because we had this ASCII you know
+null terminated string that we printed
+out hello world or whatever message we
+wanted to print and we've got the code
+right here that actually prints that so
+I'm gonna copy that and hop back over
+here and I can paste that in and all
+this is doing is it's saying you know
+load a zero into the X register and then
+we're going to go through a loop here
+where we load each character of message
+into the a register if we get a zero
+then we jump down to our infinite loop
+here and halt program otherwise we print
+the character that we loaded then we
+increment X and then just jump back up
+to print here so you know we're just
+incrementing X so we can get to the next
+character and message and so it's just
+going to print everything starting at
+message until we get to a null so
+because this push character is
+constructing a null terminated string
+this ought to print that string out so
+let's save that run the assembler get
+our EEPROM back in the programmer here
+and program it but anyway there we go
+we're all programmed so let's put this
+back in I guess I maybe should have
+powered this off but whatever brief set
+and there it is 1729 we it worked and so
+there you have it converting binary to
+decimal how hard could it possibly be
+apparently it takes 160 four lines of
+assembly code who knew and if you'd like
+to play around with building and
+programming a computer like this
+yourself you can get kits for this and
+other projects over at my website Eater
+net and you know it's been challenging
+with the pandemic but I'm happy to
+report now that everything is currently
+in stock and ready to ship
+but of course check out Eater net slash
+shop for the latest and of course thanks
+to all my patrons your support is a big
+part of what enables me to make
+these videos so thank you
+you

@@ -1,0 +1,500 @@
+Title: Let's build a voltage multiplier!
+Video ID: 4alV5LzHLE4
+URL: https://www.youtube.com/watch?v=4alV5LzHLE4
+Playlist: Build a 65c02-based computer from scratch
+Playlist URL: https://www.youtube.com/playlist?list=PLowKtXNTBypFbtuVMUVXNR0z1mu7dp7eH
+Source: YouTube auto-generated captions via videodb.org
+---
+
+got a nine volt battery here and if I
+hook it up to my multimeter here to
+measure the voltage you can see it's
+about 9.6 volts but let's say that I
+need a higher voltage of the net for
+some reason well I could hook up a
+second nine volt battery in series and
+that would give me a higher voltage
+let's say I want a higher voltage but I
+don't want to use a second battery is
+there some way to do that
+well here's a one microfarad capacitor
+and if I put the capacitor across the
+battery like this it'll charge up the
+capacitor and so now this capacitor is
+charged with 9 volts if I put this in
+series just like I put the other nine
+volt battery in series with the first
+nine volt battery
+I get a higher voltage almost 18 volts
+of course as the capacitor discharges
+the voltage is going to drop and I can
+move the capacitor back
+charge it up again
+then put it in series
+and the voltage will jump up again
+but of course again it's going to drop
+and when I take the capacitor out of the
+circuit to recharge it the voltage also
+drops because I'm breaking the circuit
+when I take the capacitor out
+so what I want is a way to somehow keep
+recharging the capacitor and putting it
+in series with the battery but also keep
+the output from dropping to zero well
+what I can do is add another capacitor
+across the output here like this
+that way when I take the first capacitor
+and I put it in series
+not only does it produce an output
+voltage here but it also charges the
+second capacitor so now when I remove
+the first capacitor you can see the
+voltage doesn't actually drop to zero
+and that gives me some time to charge
+the capacitor put it back in series the
+voltage will jump up
+I can go ahead and then charge the
+capacitor again
+the voltage doesn't drop to zero
+put it back in the voltage jumps up
+again and so now what I need is just to
+find a way to move the capacitor back
+and forth faster well here's something I
+came up with that will help make that
+easier I've got a capacitor connected to
+a switch like this and when the switch
+is in one position the capacitor both
+legs of the capacitor are connected to
+the blue wires
+and if I flip the switch to the other
+position both legs of the capacitor are
+connected to the green wires and so if I
+put this in the circuit here I can
+connect the blue wires across the
+battery and I can connect the green
+wires in series with the circuit that
+way when the switch is flipped in One
+Direction the capacitor is charging
+through the blue wires and if I flip the
+switch to the other position the
+capacitor is now in series with the
+circuit and the voltage jumps up I
+switch it out of the circuit it charges
+switch it back in
+the voltage jumps up switch it out
+charge it
+put it in the circuit charge it put it
+in the circuit
+and you see as I switch this faster and
+faster
+I can get the output voltage to remain
+relatively stable
+and so this sort of circuit is called a
+charge pump
+and I get a better picture of how this
+charge pump circuit works I've hooked it
+up to an oscilloscope here and right now
+this second capacitor here is completely
+discharged and we're measuring zero
+volts across it the first capacitor
+though is connected up and is currently
+charging and if I go ahead and switch it
+into the circuit you see the voltage
+jumps up to about 9 volts if I switch it
+out to recharge it and then switch it
+back into the circuit here you'll see it
+jumps up again charge it switch it in
+search it switch it in and as I switch
+back and forth you can see I can keep it
+charged and keep it switching back and
+forth in and out of the circuit
+and the voltage stays more or less
+around you know what is this 5 10 15
+around 18 volts or so if I'm continually
+flipping this switch and of course the
+faster I flip the switch the smoother if
+it doesn't come come out here
+the faster I flip that switch the
+smoother it stays the smoother that
+voltage level will be and you can even
+imagine if I were flipping this switch
+hundreds of times per second which I'm
+not physically able to do the output
+voltage would be even smoother so how
+could we do that well this is an a
+stable 555 timer circuit and as you can
+see it's turning this led on and off
+rapidly and for more details on how this
+circuit works you can check out my video
+on 555 timers but if we hook a
+oscilloscope up to this you can see it's
+fluctuating between zero volts and about
+9 volts on and off
+and of course the nice thing about this
+is that we can adjust the the frequency
+you can either make it faster or slower
+and in fact we can make it as
+arbitrarily fast as we like
+how do we take a signal that's
+fluctuating between zero volts and nine
+volts and turn that into something that
+looks like charging a capacitor across a
+nine volt source and then putting that
+capacitor that's charged to 9 volts in
+series with 9 volts well there's a
+clever way to do it so imagine there
+consider the scenario first where we've
+got nine volts here
+and that nine volt signal is connected
+to a capacitor that we've somehow
+already charged to nine volts so this
+capacitor already has a nine volt charge
+on it somehow
+well if we have 9 volts here in series
+with the nine volt charged capacitor
+then we're going to have 18 volts right
+here but of course that assumes that
+we've somehow figured out a way to
+charge that capacitor so now let's look
+at the other half of the signal where
+we're at zero volts so if we have zero
+volts here and we connect that to the
+capacitor
+then we can charge this capacitor as
+long as we feed in 9 volts from from our
+power source somewhere
+so if we've got nine volts coming in
+here we've got zero volts connected here
+at the bottom of the capacitor then the
+capacitor is going to charge up to 9
+volts then when we get back into this
+scenario our capacitor is charged with 9
+volts we put it in series with 9 volts
+and we get 18 volts here the problem
+though is if this is still connected to
+our 9 volt Source then current is going
+to want to flow from high voltage to low
+voltage and this capacitor is basically
+just going to discharge right into our
+battery but the clever thing we can do
+to prevent that is put a diode in here
+and the diode will prevent current from
+flowing from high voltage to low voltage
+so that when we have our 9 volt signal
+coming in here and we put it in series
+with our nine volt charged capacitor we
+get 18 volts here and that 18 volts
+isn't going to cause a current to flow
+into the battery and cause the capacitor
+to discharge immediately and over here
+if we have that same diode in our
+circuit then when we bring this to zero
+volts down here as long as this
+capacitor is charged at some value below
+9 volts then current is going to want to
+flow through this diode and charge the
+capacitor up back up to 9 volts then
+when we switch it back over to this
+scenario we've got a nicely charged nine
+volt capacitor we put it in series with
+nine volts from our fluctuating signal
+and that gives us 18 volts and of course
+I'm using round numbers here 9 volt
+batteries aren't exactly 9 volts the
+diode is going to introduce a drop
+nothing's 100 efficient but you get the
+idea and so this scenario allows us to
+take a 0 and 9 volt fluctuating signal
+and turn it into an 18 volt and 9 volt
+fluctuating signal flux rating between 9
+volts and 18 volts it's not exactly what
+we want if we want a steady 18 volts but
+it's a step along the way so let's go
+ahead and try this out so I'll connect
+the output of the 555 timer to a
+capacitor and then the other side of
+that capacitor will go to our positive
+voltage through a diode then I'll hook
+the oscilloscope up again to look at the
+output of the 555 timer and then compare
+that to this node here between the
+capacitor and the diode so that's this
+point here that's going to switch
+between 9 volts and 18 volts so now if I
+connect a battery
+I've got channel one here connected to
+the output of the 555 timer and you can
+see that switching between zero volts
+and 9 volts just like we expect but if I
+turn on Channel 2
+I've got that connected to this node
+here between the capacitor and the diode
+and so that should be switching between
+9 volts and 18 volts and if you look
+here this little green icon indicates
+where zero volts is for channel two so
+if I can move that around so if I set
+that you know right to the the middle
+there you can see this is five volts per
+division so the bottom here is about 9
+volts and then the top here is actually
+looks like closer to 15 volts but you
+know close enough so this is switching
+sort of nominally between 9 volts and 18
+volts so we're getting that higher
+voltage at least intermittently at that
+point so now that we've got 18 volts at
+least some of the time and I'm going to
+keep saying 18 volts even though as we
+saw this is really closer to 15 volts
+because you know yeah the diode's going
+to drop some voltage and the 555 timer
+isn't putting out exactly 9 volts here
+and so on but you know ignoring real
+world inefficiencies this will be
+roughly double the supply voltage so uh
+yeah I'm more interested in talking
+about the theory
+um so anyway we've got 18 volts at least
+some of the time so how do we turn this
+into a steady 18 volts
+well you know when I say 18 volts that's
+18 volts relative to ground so if we
+connect this to a capacitor to ground
+this capacitor is going to get charged
+to 18 volts but of course then when this
+node switches to 9 volts this capacitor
+which is charged 18 volts here is going
+to want to discharge it'll want to
+discharge back down to 9 volts through
+this node effectively
+moving the charge from this capacitor
+into this capacitor or we can stop that
+with another diode right here into this
+diode we'll let this second capacitor
+here charge up to 18 volts you know
+again assuming some theoretical perfect
+diode but then when it switches to 9
+volts it won't let the capacitor
+discharge so this node here will remain
+relatively steady at that higher voltage
+level
+so let's give it a try we'll connect
+this diode and then the capacitor and
+the capacitor goes to ground
+like that so I'll reconnect this
+oscilloscope probe here that's looking
+at this node that's switching between 18
+volts and 9 volts then I'll connect a
+third probe to this new node here that's
+either going to be at 18 volts or at 18
+volts
+so if we connect the battery we've got
+our 555 timer output here switching
+between you know nominally zero volts
+and nine volts looks more like 8 volts
+and then our other node here that's
+switching between 9 volts and 18 volts
+looks like it's actually getting up to
+about 15 volts and if we turn on Channel
+3 which is our output we see it's a
+steady you know about 15 volts maybe a
+little bit less than the peak there
+because of that other diode drop and so
+we've got our steady voltage here at
+this node here and we've approximately
+doubled our our battery voltage and I
+say it's a fairly steady voltage because
+if we actually zoom in we switch this to
+AC coupling and change our scale you can
+see
+the capacitor charging and discharging
+charging and discharging but this is
+maybe you know a quarter of a volt
+fluctuation which is is probably good
+enough for a lot of applications
+so that's cool that we can almost double
+a voltage source but what if we want
+even more voltage well I've redrawn what
+we've got so far and we've got this
+signal that's switching between zero
+volts and nine volts and when it's zero
+volts this capacitor charges up to 9
+volts and then when we switch here we
+put that 9 volt charge capacitor in
+series with another 9 volts and get 18
+volts
+that 18 volts then charges the second
+capacitor then when we switch back to
+zero volts here to recharge the first
+capacitor this second capacitor stays
+charged at 18 volts but what if at the
+same time we switch this down here to be
+at 9 volts so now we've got an 18 volt
+charge capacitor in series with 9 volts
+that would give us 27 volts right here
+and then when this switches back to 18
+volts here we'd have to switch this back
+down here to zero volts so that this
+capacitor could be you know continue to
+be charged to 18 volts but you know we
+can do this but you know for it to work
+we just need two zero to nine volt clock
+signals that are opposite of each other
+so we've got the one from the 505 timer
+that's switching between 0 and 9 volts
+we just need a second one that's
+switching between 0 and 9 volts that's
+uh just the opposite and then of course
+you know once we've got this we could
+easily add another diode here going to
+another capacitor that goes to ground
+just like we did before and this would
+stay at 27 volts and just like we saw in
+the last iteration this will keep this
+third capacitor charged to a relatively
+constant 27 volts and of course you can
+imagine we can keep going with this but
+let's build this for now we've already
+got the output of the 505 timer for this
+first clock but we need a second clock
+that's inverted and for that I'm going
+to make a pretty simple inverter uh just
+with a mosfet now mosfets are voltage
+switched so when this gate voltage here
+goes up to 9 volts the mosfet will
+switch on and the output here will be
+connected to ground here through the
+mosfet
+so that output will go to ground and
+then when the gate voltage here drops to
+to zero volts then the mosfet will
+switch off and this output will be
+connected through this resistor to 9
+volts and so the output here will be the
+inverse of the input
+it's not perfect but it'll work
+so I have the mosfet here and then
+connect the output of the 555 timer to
+the gate of the mosfet and the source
+the mosfet goes to ground and then the
+drain we've got connected to a 1K
+resistor to 5 volts and so here we
+should have our inverted clock
+and with our new circuit here what we
+want is our inverted clock going into
+the second capacitor here so instead of
+tying this capacitor to ground we'll tie
+our inverted clock
+into that second capacitor so that's
+here so when our clock is high this will
+be low when our clock is low this will
+be high
+then we'll connect from our second
+capacitor to our third capacitor through
+a diode
+and here's our third capacitor connected
+to ground
+let's give this a try
+so we'll connect the battery here and
+again we've got channel one is hooked up
+to the 555 timer so that's looking at
+the output of that channel two I've got
+hooked up to the output of this little
+uh you know simple inverter circuit and
+so there we see you know what is
+effectively an inverted copy of the five
+five timer so we've got our two timer
+circuits there for these two inputs now
+we can kind of just explore what else
+we've got here so if we go to this first
+node
+right here we're seeing that switching
+between you know 9 volts and 18 volts
+like we expect if we go to this next
+note past this diode
+we're going to see a higher switching
+voltage this time between you know
+normally 18 volts and 27 volts and then
+finally on the other side of this diode
+we should see our final output which is
+the high voltage and you can see that's
+relatively stable at what is it 5 10 15
+20 20 something volts so you know not
+quite 27 but close enough
+so of course you're probably wondering
+how far we can take this well we're
+going to need a bigger breadboard so
+here I made a charge pump with a
+ridiculous number of stages because uh
+why not and as you can see it's pretty
+straightforward you know we just need to
+invert the clock between each stage yeah
+but we already inverted the clock here
+with this mosfet so to invert it again
+would just get us back to the original
+clock so I'm just alternating between
+those two clock signals for each stage
+of the charge pump so let's see what it
+can do I've got a volt meter hooked up
+we'll turn that on and we'll hook up a
+nine volt battery here
+and we've got uh 110 volts so I can see
+the voltmeter is also showing this
+little lightning bolt symbol which
+suggests that there's a potentially
+dangerous voltage level here and I guess
+this is the point in the video where the
+thumbnail promised I'd attempt to
+electrocute myself so I suppose I have
+to attempt to electrocute myself
+well okay I guess I'll just touch my
+finger across these two terminals
+and I don't feel anything
+you can see the voltage drops when I
+touch it because the capacitors are in
+fact discharging through my skin but you
+know these are tiny capacitors so
+despite the relatively high voltage
+there's actually very little energy in
+here so you know high voltage represents
+the potential to move a lot of energy
+but if there just isn't much energy to
+move I'm not going to feel it do any
+real work so you know sorry this is kind
+of anticlimactic but I guess that's you
+know how video thumbnails work
+but anyhow the reason the voltage drops
+when I touch it is that the capacitors
+are charging relatively slowly you know
+because there's just not that much
+energy moving into them per unit time
+and so you know there's discharging
+through me faster than they can recharge
+so if you're looking to build yourself a
+breadboard taser this is not the way to
+do it
+so what is a charge pump circuit like
+this useful for
+well maybe you need to send a signal
+using a particular voltage level and you
+know with the signal you're not trying
+to deliver a lot of energy you're just
+trying to transmit information
+so for example hypothetically
+maybe you want to transmit information
+using the standard rs-232 protocol you
+know in that case ones and zeros are
+signaled using plus and minus 10 to 15
+volts so if your circuit that's
+transmitting rs232 happens to only have
+a 5 volt power supply you know maybe a
+charge pump like what we built in this
+video could be a good way to get those
+other voltages you know if you
+hypothetically wanted to do that for
+some reason
+but anyway hopefully you found that
+interesting and as always thanks to my
+patrons for helping make these videos
+possible I'll see you in the next one

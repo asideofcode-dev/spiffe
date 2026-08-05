@@ -1,0 +1,402 @@
+Title: “Hello, world” from scratch on a 6502 — Part 1
+Video ID: LnzuMJLZRdU
+URL: https://www.youtube.com/watch?v=LnzuMJLZRdU
+Playlist: Build a 65c02-based computer from scratch
+Playlist URL: https://www.youtube.com/playlist?list=PLowKtXNTBypFbtuVMUVXNR0z1mu7dp7eH
+Source: YouTube auto-generated captions via videodb.org
+---
+
+Well, it seems like every programming tutorial starts out having you write a simple program that just prints out hello world
+and it's usually a pretty simple starting point because the programming language in this case Python and everything gets built on top of
+Does a lot of the work but what if we don't have any of that what if we just start with a microprocessor?
+And how do we get from this to printing HelloWorld on a screen of some sort?
+Well, this is the 6502 microprocessor and it's a real classic
+You can see from the date code that this one was manufactured in the third week of 1989
+but the design for this has been around since
+1975 and versions of this chip found their way into many personal computers and game consoles in the 80s
+But believe it or not
+Even though the original design is 44 years old a version of the 6502 is still being manufactured today
+And in fact for reasons, I'll get into later. I'm gonna use this modern version
+and so here it is and here's the datasheet Ford and you can see the data sheets only about 30 pages long, but well
+Let's start take a look at the pinout for this and start hooking up some of these pins to see what we can get it
+To do you can see there's a description here as well
+For what each of the pins are and if we flip back a couple pages
+You can see a more detailed description of each of the pins and exactly what the function is
+But let's start with the power pin. So VDD is positive power VSS is the ground
+so I'll put the microprocessor on a breadboard here and
+VDD is pin eight and that's our positive power supply
+So I'll connect that to the positive power rail of our breadboard and then VSS is pin 21, so that's ground
+So I'll connect that to the ground rail on the breadboard
+So at this point if we connected five volts here to our breadboard it would power up the microprocessor
+but it's not gonna do very much because we need to connect some of these other pins and if we look at these pins you
+Know some are going to be inputs and some are going to be outputs and the outputs
+I'm not gonna worry about too much just yet. Yes, for example
+Pin 1 here is vector pol and we can see here that is an output and it indicates, you know some particular condition
+But if we don't care about what it's outputting then we don't need to connect it to anything to get the processor to work
+Yeah, but that's not the case for pin 2 your pin 2 is the ready pin and that's it
+And you can see that's an input and so it is going to matter to the processor what we hook this to and in fact
+the ready signal indicates
+so whether the processor is going to run or orbit or halt and
+So if we want it to run we need to hook pin 2 to 5 volts
+It's now I'm basically going to do same thing for the rest of these pins, you know any pins that are inputs
+I want to hook to something reasonable. That'll get the microprocessor to run and so I'll just go pin by pin
+So pin three here five 100. That's an output
+So I'm not gonna worry about that
+Pin four is the IR QB that's interrupt request and that that's an input and bringing it low will trigger an interrupt
+So I'll just high it high for now so that we're not triggering an interrupt
+Pin five MLB that's a memory lock. That's another output. So I'll leave that alone and it might be that's the non-maskable interrupt
+So just like the regular interrupt request here
+Bringing it low triggers the non-maskable interrupt. So I'll tie that high as well
+So we're not triggering that sync is another output. So we'll connect that to anything yet VDD, of course. We already have that connected
+that's our positive power supply and then we have this a zero all the way around through a
+15 and these are the sixteen address lines and so they're actually all outputs
+So I'll leave them unconnected for now as well in the mix. We have these these eight pins here d0 through d7
+That's the the data bus and these can actually be inputs or outputs
+and in fact the next pin here this rwb pin 34
+That's an output signal that tells us whether the processor is using the data pins for input or for output
+So this read/write signal and on pin 44 34 if that's high then that means the data bus pins are inputs
+And if that's low then it means the data bus pins are our outputs
+So for now I'm going to leave these unconnected, but we will need to come back here and connect something to these
+So moving on NC is no connect. So that means we actually shouldn't connect anything to that. So that's easy
+In 36b II that's bus enable and that's another input
+so the bus enable signal needs to be high in order for the processor to put anything out on either the address bus or the
+Data bus. So basically we want that to be high all the time. So I'll connect pin 36 to 5 volts
+So it's high and then we get to pin 37 is phi2 and that's the clock input and you know
+Like all computers. We need a system clock in order to provide timing toward the microprocessor and
+You know the original 6502 used a 1 megahertz clock
+But this modern version that I'm using is a bit more flexible so we can actually run it up to 17 megahertz
+You know an easy way to provide a clock input is to use one of these crystal oscillator modules, you know
+This one for example is 10 megahertz
+And so if we just connected ground and 5 volts here
+It would output a 10 megahertz clock that could then just connect directly to pin 37 up here
+But in this video, I actually want to run the clock much slower so we can really see what's going on
+So I'm not going to use this instead
+I'm going to use this clock module that I built in some previous videos for for my other breadboard CPU project and
+If I power this up you can see us it gives us a clock pulse that we can actually adjust
+So I can slow it down
+or speed it up and and we can also halt it and
+Then single-step it so we can get nice single clean clock pulses that way
+And if you want to know more about how this works, you know
+I've got several videos that walk through it all and
+explain how the the five five five timer that we're using works in a stable monostable and by stable modes, so
+You know check that out there
+If you're if you're interested there in any event, I'll connect this clock here to pin 37
+which is our clock input over here and
+Let that clock run and this is where it's actually really important that I'm using the modern static version of the 6502
+Because the datasheet here says that phi2 can be held in either the high or low state and it'll preserve the contents of internal registers
+And that's actually not the case with the original 6502
+If the clock for this stopped or got too slow, it just wouldn't work
+You'd lose the contents of the internal registers
+But but here because we're using this this modern the W 65 c02 which is a fully static design
+We can stop the clock and we can single-step it which is which is really nice
+and so that's the clock pin 37 and so just for the last couple of pins pin 38 is set overflow and
+that that's an input but the datasheet basically says it's not recommended to do anything with it other than just high and high so so
+that's what I'll do and
+Then pin 39 5 - oh, that's an output
+So we won't do anything with that and then pin 40 is the reset signal which normally needs to be tied high when the processor
+Is running but will want to be able to bring it low to reset the processor
+So what I'll do is I'll tie it high through a 1k resistor
+So now it's tied to 5 volts through that 1k resistor
+But then what I'll do is I'll add a button here and then I'll connect the other side of the button to ground that way
+When we push the button that will short this pin to ground and and and trigger a reset
+Otherwise if we're not pushing the button it won't be shorted to ground and it will be tied to 5 volts through that resistor
+And so that ought to take care of pretty much everything
+We need to set up just to get the processor to do something. And so I've connected power across here
+So if we just plug in five volts over here, then that should power up everything and of course
+We've got the clock running. So we hit the reset button here. That should reset the microprocessor
+And now the processor is is maybe doing something
+But but what is it doing? How can we figure out what's going on here?
+Well, you know, of course
+We still have a bunch of output pins here that we haven't hooked anything yet
+So we could hook up some of those output pins, you know to drive some LEDs and see if they're doing anything
+So let's give that a try
+I'll add a couple LEDs here that we can use to look at some of the outputs from the microprocessor and
+Then I'll connect a few of the address lines to them
+And so I'm just connecting up the first five address lines a zero through a four
+And then I'll connect the other side of the LEDs to ground through 220. Ohm resistors and okay, so
+something's going on here, you know the process is doing something but you know, I'm not really entirely sure what so
+How can we get a better picture of what's going on here?
+you know well
+We could certainly add a bunch more LEDs to look at the rest of the address lines and maybe look at some of the data
+lines and maybe some of these other output signals, but you know
+That's that's a lot of LEDs and it's gonna be really hard to keep track of everything going on, you know
+Especially if we're trying to sort of figure out kind of a pattern over over a period of time
+Yeah, but there are tools we can use to make analyzing a digital circuit like this easier
+So, for example, we could use a logic analyzer which has a whole bunch of inputs
+and you know
+the one I've got has 16 inputs here and we can hook each of these inputs up to a separate signal and
+use the logic analyzer to capture what's going on over a period of time so we can analyze it and
+Then if we capture while the circuit is running what we get is a display like this that tracks each of the signals
+So here we can see all of our address lines and you know, maybe you try to figure out from this, you know
+What's going on?
+And so logic analyzer is great, especially for a high-speed circuit with a lot going on
+But for something lower speed like this that we can actually run and we in fact want to run pretty slow
+Yeah, I think a logic analyzers is overkill, you know
+I think I'm much better and definitely less expensive tool is actually just in Arduino
+because if we want to monitor what these address lines are doing
+we could just hook them up to inputs on the Arduino and have the Arduino just read whatever is on each of these pins and
+You know, especially something like this Arduino mega. It's got, you know, something like 50 digital inputs
+So way more than the 16 inputs that we have on
+Nice logic analyzer like this the drawback, of course is you know, the Arduino is much slower, you know
+We can read millions of samples per second with a logic analyzer. But that's fine, you know for running our clocks slow enough
+That's that's not going to be a big deal
+So forget the logic analyzer out of the way and also get these LEDs out of here
+Then what I can do is hook those 16 address lines up to 16 of the digital i/o pins on this Arduino, you know
+So just like the logic analyzer the Arduino can then keep track of you know, what each address line is doing
+so I'll connect this ribbon cable with 16 connectors over to 16 of the digital inputs on the Arduino and
+On the other end. I'll connect to the 16 address lines
+And also need to connect the ground
+Of course and so once I've got the 16 address lines then connected into 16 digital i/o pins of the Arduino
+I don't need to program the Arduino to read each other's address lines and show us what it's doing
+Okay
+So I'll start by listing out the 16 pin numbers that I used and I guess I could use any of the digital i/o pins
+on the Arduino
+But these are the 16 pins that I used for the address
+Starting with a 15 which is on pin 22
+And going to a 0 which is on pin 52 at the bottom then in the setup function. I'll loop through all 16 pins and
+Set the pin mode for each 2
+Input and so what that does is just sets all 16 of these pin numbers here
+It just it just goes through all 16 of them and sets them to input and then in the loop function here
+I want to I want to go through each of those same pins again
+And here I want to actually read each bit. I
+think digital read returns a boolean
+So if I want a 1 or a 0 here and I can say if it's true, I want a 1
+otherwise I want to 0 and
+then what I can do is I can assign this to an integer and then after we have that 0 or 1 we can we
+Can print that to the serial monitor?
+Then after we've printed all 16 bits here, then we'll print a new line. So this ought to read all 16 bits
+From from pin 22 which is which is address 15 all the way down to address 0 and print each bit in order
+And then print a new line. It'll just keep doing that
+And of course in our setup, we need to initialize the serial port up here. So we'll initialize the serial port to
+57600 which is just a standard speed. Okay. So this oughta continually read those 16 bits and print them on the serial
+So let's give it a try. I'll connect the Arduino up and then compile and upload the sketch
+There we go now if I open up the serial monitor
+Hey we are seeing
+Or saying some numbers and so it looks like we're getting what we're getting something. But how do we make sense of this?
+You know, it looks like it's just kind of spewing a bunch of ones and zeros that are changing, you know
+Maybe on every clock pulse, or maybe it's every other clock pulse
+It's actually kind of hard to tell um, in fact that actually that's a good question
+You know
+It'd be really helpful if we can correlate what we're seeing here from the Arduino with the actual clock pulses and unfortunately
+We've got lots more i/o pins here on the Arduino. So let's look the clock pin up as well
+So I'll connect the clock to pin 2 here on the Arduino
+And I'll close the serial monitor here
+And I'll define clock to be pin 2 and then in the setup function here
+I'll set the pin mode for clock to input and
+Then rather than reading the clock pin and displaying it like we're doing with the address lines here
+What what I'm gonna do is I'm gonna have the clock pin trigger and interrupt
+so in the setup here
+what I'll do is I'll attach an interrupt to
+The the interrupt for the clock pin and actually only some of the pins on the Arduino support interrupts
+But but pin 2 is one of them so we should be ok here
+and then what we'll do is we'll have the interrupts call a function called pawn clock and we'll do that on the rising edge of
+The clock signal when it transitions from low to high then what I can do is I can create that on clock function here
+and
+Then if I move all this stuff from the the loop function
+into the on clock function
+Instead of just constantly looping and printing out the address pins
+It'll just read and print out the values of the address pins once per clock pulse
+And so my you know, Arduino loop function actually doesn't do anything
+The only time we do anything is when we get a clock pulse and then we just print the address once so
+Let's give this a try. Well, go ahead and upload that
+And I'll bring up the serial monitor and now we're getting just one line per clock pulse
+So now if I the clock you can see it stops and then I can actually single-step it
+So, that's great but you know the actual data we're getting still doesn't make a whole lot of sense at least not to me
+So let's uh, let's try looking at a few more pins, you know, so we're looking at the address lines here
+But you know, we could also look at the data bus, right? There's another 8 bits here that that represents the data bus
+So let me hook those pins up to the Arduino as well
+Okay. So now what I've got is I've got the odd pins here from 39 to
+53 are now monitoring the the data bus going from d7 down to d0
+All right. So now that I've got the the eight data pins hooked up
+I'll go back to the Arduino and I want to kind of do the same thing
+So first, I'll list out all of the pin numbers for the data bus
+Okay, so it's gonna be 39 through 53 to the odd numbers
+So those are my data pins and then I'm gonna initialize in the same way. So I'm just going to loop through all
+The data pins, of course instead of 16. There's 8 of them and
+They aren't the address pins. They're the data pins
+So this will loop through and set the pin mode for each of the eight data pins to input
+Then in the on clock function down here, I'm gonna kind of do the same thing
+So I'm just going to copy this loop the pit prints the 16 address lines
+And we'll duplicate that
+And we want to print the eight data lines
+So, there we go and then between these two
+We'll just print a few spaces
+the other thing I can do here to make it easier to sort of interpret what's going on is instead of just printing out the
+Binary ones and zeros like we are we could print the values in decimal or actually in hexadecimal
+So to do that what we need to do is compute the value that we're reading
+So what I'll do is at the beginning of here where we read each address, I'll start with the address equal to zero
+Then each time we read a bit I'll shift whatever address is over one bit and
+Then add the bit that we just read
+So now after we read all sixteen bits
+This address variable will have the address value in it as a number and actually our address isn't ever going to be negative
+So let me make this unsigned
+So, there we go
+So we get to the end of this loop our address will equal equal whatever the the address actually is
+And then I can do the same thing for the data
+Start with data equal to zero each time and then each time we read a bit
+We'll ship the data left one bit and add the new bit
+So by the time we've read all eight bits the first bit will have been shifted to the left seven times
+So now we've got the address and data as integers. We can just print them out
+So I'll use s printf so I can format them to a string and I'll call that string output and then I'll print the address
+as a four digit hex number and the data is a two digit hex number so
+address and
+data
+Then I want to actually print out the formatted output
+And of course, I actually need to define output up here
+So just make that a character string 15 should be long enough, okay
+And then one last thing I want to add here is remember that the eight bits that we're looking at the 8 data bits
+Can either be inputs or outputs and that's actually what the next pin here indicates this read/write pin. So that's this
+Pin here indicates whether the data bus is is either inputting or outputting from the processor?
+So this read/write pin is high
+Then it means the processor is reading from the data bus and if this is low then it means it's writing to the data bus
+So be good to keep our eye on this read/write signal as well
+So what I'm going to do is I'm going to hook that up to pin 3 over here
+Then in the code i'll define read write as pin 3 then in the setup function
+We'll set the pin mode for the read/write pin to input
+so the Arduino can read you can tell us what that pin is doing then when I print everything to the output here what I
+Want to do is is also print out what that read/write pin is doing
+what I'll do is add a character to our output string to indicate if the processor is reading or writing to the data bus and
+then the actual character will be based on what the Arduino reads from that read write pin and
+This digital read returns true or false
+But we can say that if it's true print and our since that means the processor is reading for the date of us
+Otherwise if it's false print a W since that means it's writing to the data bus
+Okay. Now let's run this and see what happens
+Yeah, it looks like I missed a comma here
+Run this and see what happens. There we go. Looks like that's working better. I'll bring back our serial monitor and
+I guess we need to start our clock
+And there we go now it's doing something
+Ok, so it looks like it's doing something but you know
+It's it's not really clear to me what it's doing exactly you can see the address is sort of jumping around
+The data is jumping around to different values
+Sometimes it's reading sometimes it's writing
+But you know, honestly, I'm not really sure what's going on here
+But one thing that is kind of interesting is is you can see at least sometimes it is trying to read from the data bus
+You know, so each time we see this this read here and it's essentially treating those 8 data pins as inputs
+All right, so it's actually treating these pins here as inputs
+And you know, there's really nothing connected to them other than the Arduino and the Arduino is just monitoring them
+So there's nothing connected to these 8 pins that's driving them
+So whenever the processor tries to read data from those pins, it's really just gonna get garbage, you know
+So if the processor is just kind of reading garbage whenever it reads from those data pins, you know
+I guess I would sort of expect it to behave kind of randomly
+But one thing we could try is we could actually try
+Connecting those data pins to some kind of predictable signals so that the processor isn't just reading garbage
+You know, let's let's actually try that
+So what I'll do is I'll tie each data bit here either to ground or to 5 volts
+And actually what I'm doing is I'm tying each to either ground or 5 volts through a 1k resistor
+You know that way when the processor is reading from the data bus
+Then it'll see whatever voltage is on the other side of that resistor either 5 volts or ground
+So interpret is either a 1 or a 0
+but if the
+Processor outputs something then. It'll be able to drive the output either to 0 or 5 volts and then
+You know worst case they'll be like a 5 volt difference across that resistor, which is no big deal. So
+In other words these resistors that I'm putting that I'm adding here are just kind of setting a default value
+But you know if the processor outputs something different then you know, no big deal
+and so now I'm hooked these resistors to
+your either ground or 5 volts in a particular way so that the data that the processor is going to read is going to be
+one one one zero one zero one zero
+And you know I picked that particular pattern for a reason as you'll see in a minute
+But anyway, let's let's take a look at what it's doing
+Yeah, so right away, you'll notice it's behaving a lot more predictably. So, you know a couple things you'll notice one
+It's it's always reading there
+It seems to be always reading and of course what it's reading is ei in hex
+Which is the the one one one zero one zero one zero, that's the value that I hard-coded those resistors
+So it's reading the value that I set there but it's but it's always just reading. That's all it's doing
+It's not reading and writing and the address is behaving much more
+Sanely, I guess you can see the address is just counting, right, you know, so it's you know
+Ffff e F 80 81 82 83. So it's just counting up in hexadecimal obviously
+But it's just counting. So something about providing the that hard-coded input is
+Helping it behave much more predictably. So let's let's take a closer. Look at what's going on here
+So remember, I've got this reset button here. And when I when I press it, you'll you'll see something happens here
+the address is kind of jump around a little bit and
+Then it kind of settles down into that same pattern that we saw before where it's just counting here and in in hexadecimal
+And so this is kind of interesting that it seems to have this sort of behavior where it's counting. But then if I hit reset
+You'll see it kind of goes through some other interesting little behavior and then it just settles right back down into that
+You know sort of hexadecimal or binary whatever counting behavior that it was doing before so
+Reset is doing something as I know if we look at the data sheet
+There's actually a description of what the reset signal does and it says it'll initialize the microprocessor and start program execution. Okay
+And it says when a positive edge is detected. There'll be a reset sequence lasting seven clock cycles
+so let's take a look at that a
+hold reset here
+and
+Then stop the clock
+and
+then what I'll do is clear the monitor output here and
+So the reset sequence is seven clock cycles. So let's do that was pulsed the clock seven times 1 2 3 4 5 6 7
+And so that's what we get. So that's that's apparently the reset sequence
+It's not really clear what it's doing, but I guess it's it's going through its reset sequence. Whatever that might be
+So let's look back at the datasheet. Right? So it says there's a reason sequence lasting seven clock cycles
+then it says the program counter is loaded with the reset vector from locations fffc the low byte and fffd the high byte and
+It says that's the start location for program control
+So let's keep going here. So we got we got the first seven steps here and that's sort of the reset sequence
+I'm not really sure what exactly it's doing there, but presumably it's resetting itself. So let's advance the clock one more time
+And now what we see is it's reading at address fffc
+so it's sending the address to ffff see and it's reading and so that's interesting because we just saw ffff see as being something that
+The reset would do is that it would read from fffc and then it would read from ffff D
+And it said that would be the start location for program control
+So, let's see what it does next so next it's going to read from fffd
+and
+So it's doing these two reads write F of FC and F of F D and it's reading from the data bus and each time
+It reads from the data bus it gets ei, right because that's just what I've you know hardwired in there with those resistors
+And so the datasheet says that the program counter is loaded with that
+So so inside the processor
+there's a program counter register and
+Now it's loaded with a low byte of ei because that's what it reads because that's what it always reads and a high by TVA
+So in other words, the program counter is EI EI and then it says this is the start location for program control. Okay
+So the start location for program control in our case is EI EI
+So I've gone through this seven clock cycle reset sequence. We've read the reset vector from from these two locations fffc
+And if if F D and and so on the next clock pulse, it's actually going to start running the program
+So, let's see what happens
+So if I advance the clock once
+Look at that now the address is EI EI
+And that actually makes sense because the processor is just starting to execute a program and you know during that reset sequence
+We saw that EI EI was going to be the start location for program control. So now the processor is actually
+Trying to run a program and so it goes to address EI EI, you know
+It sets its address pins to that address and it reads from the data bus
+And so what it's doing is it's saying, okay. This is the first address of a program
+So, let me try to read an instruction at that address
+So it sets the address and it reads and so in this case when it reads it gets EI again
+And so now it's going to try to interpret EI
+As an instruction and actually try to execute it
+So of course that raises an interesting question, which is you know, how is the processor going to interpret ei as an instruction?
+Well if we look in the datasheet
+We can find this up code matrix and then we can see if the most significant digit is an E
+And then the other digit is an A
+we come over here and we find out that the opcode for ei is no op and
+That's the that's the instruction for no operation. So so ei is the opcode for for no opt for no operation
+So basically the processor is going to do nothing
+And so if we pulse the clock again
+We can see after presumably doing nothing the address increments and it reads the next instruction in our in our program
+I guess if you want to call it that which of course is another no op and
+if we just keep keep pulsing that clock this is going to go on forever and
+It's going to keep reading no op instructions advancing the next address reading and o op and so on
+well
+The one thing you might notice here is that actually it looks like I have to pulse the clock twice for it to advance to
+The next address so it almost seems like the no op instruction is taking two clock cycles to execute and in fact, that's right
+If we come back to the opcode matrix table here, you see that no op has this little eye underneath there
+And that means that's the the addressing mode if we flip back a couple pages here. You can see in the addressing mode table
+I is implied
+You can see for the chip. We're using instructions that use that implied addressing mode
+Take two clock cycles or two, you know, the instruction time is two clock cycles
+And if I just let this run that's what we see, you know, we see it
+just reading that that ei there to see it reading that no op instruction and
+Every two clock cycles it advances to the next address and reads another no op instruction and just keeps doing nothing forever
+And so hopefully you can see that the microprocessor here is initializing and it's trying to fetch and execute instructions
+And so, you know right now we're not able to feed it instructions from anything other than you know
+Literally hardwiring the no op instruction
+but in the next video
+I'll hook up a ROM chip that we can program with some different instructions that the processor will be able to
+Fetch using different addresses and you know, see if we can use that to actually write some sort of a hello world program
+Now if you'd like to follow along with these videos and build your own simple computer with the 6502 microprocessor
+I've gathered all the parts that I'm going to be using into this series into a kit
+And so this is what I'm going to be building towards in these videos, you know
+Something with a simple display and some a couple buttons and then all you know walk through programming a you know a game or something
+in assembly language
+You know, there's obviously a lot more stuff in this kit than what I covered in the video
+You know, I've got RAM and ROM chips and all card sorts of input and output stuff
+But I'll get to all that in future videos
+So for more information about getting one of these kits, you know, check out my website at eater net slash 6502
+There's also some information there about a few other things that you'll need that I didn't include in the kit like an EEPROM programmer
+Which he'll definitely need in order to program the computer
+As well as a kit for the clock circuit that I used in this video and the Arduino mega that I used in this video
+anyhow more information on all of this a teeter net 6502 or click the link that's somewhere on the screen and
+As always thanks to my patrons who make putting these types of bigger projects together possible

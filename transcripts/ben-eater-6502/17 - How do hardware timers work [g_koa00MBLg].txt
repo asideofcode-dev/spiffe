@@ -1,0 +1,974 @@
+Title: How do hardware timers work?
+Video ID: g_koa00MBLg
+URL: https://www.youtube.com/watch?v=g_koa00MBLg
+Playlist: Build a 65c02-based computer from scratch
+Playlist URL: https://www.youtube.com/playlist?list=PLowKtXNTBypFbtuVMUVXNR0z1mu7dp7eH
+Source: YouTube auto-generated captions via videodb.org
+---
+
+when writing software it's common to
+want the computer to delay for some
+period of time so for example this
+computer i built is running a simple
+program that just flashes an led on and
+off a few times per second and the
+software is pretty simple it just needs
+to turn the led on wait a bit and then
+turn the led off wait a bit and repeat
+and this of course is a 6502 based
+computer that i built i've got a whole
+series of videos walking through that
+process and how it all works that you
+can check out on my channel or my
+website eater.net 6502 where i've got
+more info and where you can get kits to
+build your own
+but anyway i've got this led hooked up
+here to bit zero
+of port a here and that makes it really
+easy to turn on and off because assuming
+the led is off which we can do by
+writing a zero to port a we can just
+increment whatever value is on port a
+and it'll turn that one's place bit on
+and then once it's on decrementing port
+a will turn it off if we do this in a
+loop then this will flash the led
+basically as fast as possible but of
+course it'll be too fast to see unless
+we put some sort of delay in here
+between each of these instructions and
+that's what this video is about how does
+a computer produce a precisely timed
+delay
+so one thing we could do is use the no
+op instruction which doesn't do anything
+but it does take some time to execute
+problem is it doesn't take very much
+time so we'd need to do a lot of these
+actually quite a lot but if we did need
+just a really short delay this might be
+practical you figure the processor is
+running at one megahertz and each of
+these no ops is going to take two clock
+cycles so that's two microseconds so if
+you needed you know a few microsecond
+pause i guess
+that would work but for longer pause we
+could use uh just a loop with a bunch of
+no ops in it
+so for example
+what i'll do is i'll create a subroutine
+called delay where we can put a delay
+and that way we can call it twice
+[Applause]
+so this way
+you know we turn our led on and then we
+delay for some period of time then we
+turn the led off and then we delay for
+some period of time and that's our our
+loop and so the question is what does
+this delay do like i said we could have
+some no op instructions in here but if
+we want to do a whole bunch of no op
+instructions what we could do is just
+have a loop we can use the x register as
+a counter for a loop so load the x
+register with ff which is as big a value
+as we can put in there it's an 8-bit
+register
+then we'll use the decrement x
+instruction which will decrement
+and then branch not equal to delay one
+and so what that will do is it'll you
+know start with x register as ff
+and it'll decrement it and then if it
+hasn't reached zero it'll jump back up
+here to delay one where it'll decrement
+it again and so if we just put a no op
+in here then this will execute in this
+case 255
+no op instructions
+and then once it's done with that it
+returns from the subroutine and that
+completes our delay subroutine
+if we want to figure out how long this
+delay is going to be we could you know
+actually figure out how long each of
+these instructions is so no op we know
+is two clock cycles decrement i think is
+also two clock cycles and then the the
+branch not equal is two or three clock
+cycles depending on whether it branches
+or not and so we're going to execute
+that 255 times you could add all that up
+and figure that out but another approach
+is just run the program and see what it
+does and i i like that approach because
+it's uh it's easier
+now if we get that program in here and
+reset the computer
+it looks like the led is just on and i
+suspect what's happening is it's
+flashing but it's probably just flashing
+too fast we're not delaying long enough
+to to notice
+and we could confirm that by looking
+with the oscilloscope here if we just
+probe that port there
+here we are in the oscilloscope and we
+can see it it is you know sort of
+blinking on and off if you will but the
+frequency is 276 hertz so it's blinking
+on and off 276 times per second so
+definitely too fast to see
+but if we slow it down by you know let's
+say a factor of 255 which which we could
+do with maybe another loop
+then we might be able to see something
+so let's give that a try
+and for that we can use the y register
+which is conveniently enough available
+so we'll load that with uh
+ff
+and just create another loop around this
+loop where we get to the end of the the
+the loop for x we decrement y
+and then branch back up to
+delay two
+and so that forms an outer loop so we
+have an inner loop that does 255
+no ops and then an outer loop that does
+that 255 times so that should hopefully
+create a long enough delay that we'll
+actually be able to see something
+[Applause]
+so let's give this a try we'll get that
+in there reset
+and sure enough our led is blinking
+okay so that worked but it's got a
+couple drawbacks and you know one is
+that in order to know exactly what the
+period is or you know essentially know
+exactly how this still how long this
+delay is you know we'd have to uh you
+know analyze exactly how many clock
+cycles each of these instructions takes
+and and add them up and you know
+depending on how many times they go
+through the loop and that sort of thing
+uh and so getting a precise delay
+it's certainly possible but it's not
+exactly easy and then of course if the
+processor were running at a different
+speed then that would you know change
+everything of course
+the other disadvantage of course is that
+while the processor is in this loop it
+can't do anything else and you know
+maybe we want to flash an led and
+actually do something else instead of
+use all of the processor just to flash
+an led and so the solution is usually
+using some sort of external hardware
+timer
+and conveniently enough we already have
+a hardware timer this 6522 versatile
+interface adapter chip has got two
+timers built into it that we can use you
+know so far in my videos i've mostly
+just been using these i o ports the port
+a and port b which let us read and write
+from these 16 pins here but this chip
+has got some other functions so here are
+all the registers of the 6522 so we've
+got the output and input registers b and
+a which we've been using
+as well as the data direction register
+for bna which uh let us specify which
+bits are inputs and which are outputs on
+those two ports but then we've also got
+you know the timer 1
+counter low and high and we've got a
+timer 1 latch low and high as well as
+timer 2 counter low and high so there
+are actually two different timers that
+we can control using these registers
+and the two timers have slightly
+different functions
+timer 1 is a bit more capable for what
+we're trying to do so that's what i'll
+be using
+so if we go up to the top of the code
+here we'll see where we've got the
+registers defined already
+and so i'll go ahead and define timer 1
+counter low and timer 1 counter high and
+those are register numbers 4 and 5 and
+of course the way we've got the 6522
+hooked up everything is going to show up
+at address 600 something whatever
+register it is
+so that's timer 1 counter low and high
+registers 4 and 5.
+and timer one actually has several
+different modes that it can operate in
+and those are set using this auxiliary
+control register so there's this bit six
+and seven here for t1 or timer one uh
+timer control that can be put into any
+of these modes and this auxiliary
+control register
+is register a number b so i can define
+that in the code as well
+and so those top two bits in the
+auxiliary control register control what
+mode the timer's in and the first one
+i'll show you is just this first mode
+where they're both set to zero and we
+know we're not doing anything with timer
+two or any of this other stuff so we can
+actually just set this whole register to
+zero
+so right here in our initialization code
+we've already got a zero in the a
+register so we'll just store that
+to the auxiliary control register so
+that'll set that to zero
+and that puts the counter into a
+one-shot mode which is basically a
+countdown timer
+so that means we'll be able to load the
+timer with some time value and have it
+count down and then we can figure out
+when the timer expires
+and this part of the data sheet here on
+page 17 describes how that works but
+it's a little bit confusing because
+there's four different registers that it
+uses there's the timer one latch high
+and latch low timer one counter high and
+timer one counter low and basically the
+way it works is that the low and high in
+each case here together make up a 16-bit
+counter so overall the timer can be set
+to any value between one and six five
+five three five which is you know the
+highest number that can be represented
+with 16 bits and for reading these
+registers the the latch so high and low
+to get this this these 16 bits here this
+latch
+tell us what the counter was set to in
+other words where it started
+and then the 16-bit counter tells us
+where the counter is so as it starts
+counting down this will start counting
+down so when the timer starts this latch
+and this counter are equal but then as
+soon as it starts the the counter starts
+counting down uh but getting it set up
+initially is a little bit weird
+but if we go through here it it just
+sort of describes it so it says
+bit six and seven of the acr logic zero
+so we set that so that sets the mode
+then it says the low order timer one
+counter or low order timer one latch
+must then be loaded with the count value
+so we have some count value that we want
+to count some uh you know period that we
+want to time
+and so we can set that either in the
+the latch low or the counter low
+and it says note that a load to the low
+order timer 1 counter is effectively a
+load to the low order timer 1 latch so
+if we load some value into this counter
+it's automatically going to load that
+same value
+into the latch
+now it says next the high order count
+value must be loaded into the high order
+timer 1 counter at which time the value
+is simultaneously loaded into the high
+order
+latch
+so same thing we can load a value into
+the
+high counter and then that will load it
+into
+the the latch but loading into the uh
+the high counter is special because that
+actually is what starts the clock so
+says the counter will start counting
+down on the next phi 2 clock so the next
+processor clock following the load
+sequence into high order t1 counter so
+this high order t1 counter
+that's kind of your your start your
+start button
+so when you load into that it starts the
+counting
+it also says during the load sequence
+the contents of the low order t1 latch
+is transferred to the low order t1
+counter so it actually when we load this
+it does a couple things so it copies
+what you're loading into the the high
+order latch
+as well as copying the contents of the
+low order latch back down into the low
+order counter as well as actually
+starting the counter so anyway all of
+that is to say that that as as kind of a
+shortcut you can almost just ignore this
+latch altogether and just think well
+first you load the low order counter
+with the
+lower eight bits of whatever value you
+want to count to
+and then you load the high order counter
+and as soon as you do that you've got
+all 16 bits loaded in there and the
+counter starts right away and the fact
+that it's copying that into this latch
+is kind of beside the point we don't
+really care in this case
+however there's there's another mode
+that we'll talk about a little bit later
+where that does come into play
+but anyway once it starts counting it
+says you know they'll start counting
+down and once the the t1 counter reaches
+a zero count uh the interrupt flag is
+set
+so once this gets to zero it'll it'll
+set this interrupt and the interrupt
+flag is talking about
+is this interrupt flag register here
+which is register 0d
+and if we look at this internet flag
+register it's got a bunch of bits for
+different sorts of interrupts and bit 6
+is timer 1. so when that timer gets to 0
+it'll set this bit in the interrupt flag
+register so that's another register
+we'll need to be able to look at and so
+that's the interrupt flag register and
+it'll be address 600d
+now for the delay subroutine we'll go
+down here and basically just get rid of
+all this
+and what we're going to replace it with
+is initializing that timer value and
+then waiting for the timer to expire and
+the time are 16 bits so the maximum we
+can get is fff which is 65 535
+and this is going to be clock cycles
+that the timer is going to run and so
+since we've got a one megahertz clock
+that means this is going to be 65 000
+microseconds or 65 milliseconds and so
+that's the longest we can have the timer
+run for if we want to do a more round
+number we could do say 50 milliseconds
+which would be that
+and that would be in hex be c350 so when
+we load our timer
+that low value the low uh byte would be
+five zero and the high byte would be c3
+so we'll load the low one first and then
+the high one that'll start the timer so
+the low byte is five zero and that goes
+in the timer one counter low
+and the high byte is c3 and that goes in
+timer one counter high
+as soon as we store that into the timer
+one counter high that starts the timer
+so now at this point we basically just
+need to wait for the timer to expire so
+we can just sit in a loop here
+uh checking to see if the timer's
+expired and we're going to know the time
+is expired by looking at bit 6 in the
+interrupt flag register this ifr and to
+check that bit 6 what we can use is we
+can use the bit instruction the bit
+instruction does a few things to do a
+bit test it ends the the the operand
+with whatever's in the accumulator so
+you can set certain bits in the
+accumulator to test those bits
+and then it'll set the zero flag if it
+matches or not but it also just copies
+the bit 7 and bit 6 into the negative
+flag and the overflow flag so we're
+interested in bit 6
+and so you can see it just copies bit 6
+right into the overflow flag so if we do
+a bit test of the interrupt flag
+register we can then do a branch if
+overflow clear
+back to delay 1. what that'll do is
+it'll say if the overflow flag is clear
+after doing this bit test on the
+interrupt flag register in other words
+if bit 6 is clear then just jump back up
+to delay and just sit in this loop and
+so essentially
+we're sitting in this loop these three
+lines here until bit 6
+gets flipped in the interrupt flag
+register and so bit 6 being set means
+that there's a set by timeout of timer 1
+and then we can clear it
+by reading timer 1 counter low
+so once we drop out of this loop here if
+we just read from timer 1 counter low
+that'll reset that that flag to sort of
+acknowledge that we've we've detected
+that the timer has expired so that's our
+new delay routine so this will delay for
+exactly 50 milliseconds let's give it a
+try
+so install the new program here and
+reset
+and there we go it's blinking and with a
+50 millisecond delay between when it
+turns on and off that'll be 100
+milliseconds per cycle or in other words
+it'll flash about 10 times per second
+which is what it appears to be doing
+so that seems to work but you know it's
+got some drawbacks as well
+at least in theory though during this
+loop here we could uh do stuff you know
+between each time we check to see if the
+timer's expired
+it wouldn't really matter how long that
+stuff took if it was you know at least
+as long as it wasn't more than you know
+tens of milliseconds
+because the timer is running
+independently so at least in theory we
+have the ability to to maybe do some
+other stuff while the timer's running
+although the program's not really
+structured all that well for it but
+we're also limited here because the the
+maximum delay we can do is is 65 000
+cycles or in our case with our clock
+it'd be 65 microseconds you know if we
+wanted a longer delay we could just
+call the routine multiple times
+but there's actually still a better way
+that brings me to the second mode for
+the timer which is free run mode which
+you set by setting this t1 timer control
+to zero one and that gives you
+continuous interrupts so basically if we
+look back at this here we've got our
+counter and our latches and before what
+would happen is we would load this
+counter up and it would count down and
+when it got to zero we would get that
+interrupt where we get notified
+in free run mode what happens is when
+this gets to zero we get notified but
+then it immediately restarts by loading
+whatever's in those latches and resets
+the timer and starts all over again
+and so that's where you see the value of
+having a separate latch which indicates
+what the timer should reset to when it
+resets
+and the data sheet describes you know
+how how that works exactly so you know
+it talks about if you reset by loading
+the counter while it's counting it'll
+reset the counter right away whereas if
+you load the latches while it's counting
+then you're configuring what it should
+reset to once the current counter
+expires so it gives you a fair amount of
+flexibility but i think the most useful
+way to use it is as an interval timer
+that just triggers at a predictable
+interval so if we look at the code what
+i'm going to do is instead of setting up
+the timer
+here when we want to initiate a delay
+i'm going to set up the timer at the
+very beginning of the program
+so when the computer first resets i'm
+going to have it run an initialized
+timer routine and it'll actually get rid
+of all this delay stuff
+and then the init timer routine will be
+where we first initialize the value that
+we want for our timer
+and then since the timer is going to be
+running in free run mode
+we want to set the the first two bits
+this timer control of the auxiliary
+control register the acr we want to set
+that to 0 1 so that we get continuous
+interrupts
+so before we were up here initializing
+the acr
+register to to 0.
+so instead what i'll do is when we
+initialize the timer we'll set the acr
+to have those first two bits be 0 1
+and that'll put the timer into free run
+mode
+that'll cause the timer to trigger uh
+you know continuously at whatever
+interval we set here
+and then as for that interval we wanted
+to trigger fairly frequently so i'm
+going to set it to 10 milliseconds
+which would be 10 000 microseconds
+although actually
+you got to pay attention to your data
+sheet because what you see here is is in
+this uh free run mode
+we're going to get these interrupts irqb
+that's our interrupt it's going to
+happen every n plus 2 cycles so if we
+want these interrupts to come every 10
+milliseconds
+we actually don't want 10 000
+microseconds we want
+9 000
+whoops we want 9998
+way n plus two is going to give us a
+period of ten thousand
+so we convert that to hex it's two seven
+zero e so the counter low byte we wanna
+set to zero e and the counter high byte
+we wanna set to two seven so the counter
+low will be zero e and the counter high
+will be 2
+7. so this will cause that timer to
+trigger interrupts every 10 milliseconds
+but then as to how we detect that
+interrupt there's actually sort of two
+ways so one we saw is this interrupt
+flags register we can look at that and
+see if that bit 6 is set and that's what
+we were doing before
+but in order to detect that we have to
+pull this interrupt flags register and
+continuously check to see if that bit's
+set
+we can also have the 6522 actually
+trigger and interrupt a processor
+interrupt
+by setting a bit in the interrupt enable
+register so there's a corresponding bit
+in the interrupt enable register for
+timer 1 that we can set and so if we set
+this interrupt enable register which is
+0e
+if we set that register and we have the
+set bit set and the timer one bit set
+that will enable interrupts for timer
+one and we'll actually get an irq an
+interrupt request that will trigger when
+that timer expires
+so the interrupt enable register is
+another register here and it's a
+register address e so 600e
+and so if we set the first two bits of
+that so the first bit to say we want to
+enable interrupts and the second bit to
+say we want the interrupt for timer one
+that'll generate interrupts and then we
+need to write some code to handle the
+interrupts
+and so we can put an interrupt handler
+here right now there's no interrupt
+handle it's just set to zero but we
+could set that to irq
+and define that
+here and that'll be our interrupt
+handler and at the end of the interrupt
+handler we want to return from interrupt
+and then the only thing we really have
+to do in the interrupt handler is clear
+the interrupt and you know for this case
+we're only expecting interrupts for a
+timeout of timer one so we can read this
+timer 1 counter low
+that's probably the easiest way to clear
+the interrupt and we really don't care
+what the value is we just need to read
+it to acknowledge the interrupt so we
+can use the bit instruction which will
+read it without doing anything with any
+of the registers
+other than the flags register which will
+get automatically restored at the end of
+an interrupt anyway
+but the thing i really want to do in
+this interrupt handler is actually just
+count the number of interrupts we get
+the basic plan here is just to have some
+variable call it ticks
+and every time we get an interrupt every
+uh 10 milliseconds we'll increment ticks
+and then anywhere else and ticks is just
+a variable in memory and anywhere else
+in our program we can look at text to
+see
+you know essentially sort of what time
+it is or how many how many ticks have
+passed since the computer started up and
+so ticks is just going to be some value
+in memory so we have to define it up
+here
+and we could just put it at address zero
+that's the beginning of memory so we'll
+just say zero zero zero zero is is the
+address for for this ticks variable
+although if we just say zero zero that's
+a shorthand for saying address zero it
+means the same thing it's address zero
+in memory
+and of course if we do this what will
+happen is
+every time we get an interrupt so every
+ten milliseconds we'll increment ticks
+until ticks reaches 255 and then it'll
+wrap around but it's actually pretty
+straightforward to make this a much
+bigger variable by using four different
+bytes so ticks is in you know address
+zero in memory but text plus one is
+going to be an address one address two
+and address three and we could you know
+sort of piece all four of those bytes
+together to create a a single 32-bit
+number and with 32-bits you know we
+could store values up to 4.2 billion
+which if we're counting you know 10
+millisecond intervals you know that
+would let us count up to 42 million
+seconds
+which is
+you know almost 500 days
+so with a 32-bit tick counter like this
+we could keep track of intervals of up
+to you know almost 500 days which you
+know seems like more than enough for a
+breadboard computer and the way we do
+that is after we increment ticks we see
+if it rolled over we see if it if it
+equals zero and if it doesn't equal zero
+then we exit our interrupt handler
+because we've successfully incremented
+it but it does equal zero then that
+means it rolled over and so what we'll
+do is we'll increment text plus one
+that means we incremented this it got to
+zero and so then we increment uh text
+plus one which is going to increment our
+next byte in our 32-bit uh
+word and then same deal if that doesn't
+roll over we exit the interrupt handler
+but if it did roll over then we go on
+and increment the next bite so that
+means this rolled over so now we
+increment this byte and as long as that
+didn't roll over we'll exit the
+interrupt handler
+otherwise we'll increment the last byte
+[Applause]
+and so we've initialized our timer uh
+and set it to trigger every 10
+milliseconds and then every 10
+milliseconds we're going to come into
+our irq handler here and we'll increment
+our text counter and it's a it's a
+32-bit counter and you know most of the
+time when this irq is triggered
+we'll clear the interrupt we'll
+increment ticks and it's not going to
+roll over most of the time so we'll just
+branch down to end irq and exit so it's
+a very small interrupt handler that's
+not going to
+create much of a performance penalty and
+i suppose one other thing we can do in
+our initialized timer here is initialize
+our text counter all four bytes of it
+two to zero
+so that way our counter starts out at
+zero
+[Applause]
+and so what this lets us do is when we
+get up to our our program here
+you know we can sit in this loop
+and while we're sitting in this loop in
+the background that tick counter is just
+going to keep incrementing every 10
+milliseconds
+and so if we want to let's say toggle
+the led on and off every 250
+milliseconds
+all we need to do is just keep track of
+what that tick counter is and if it's
+increased by 25 then we know that 250
+milliseconds has passed and then we'll
+toggle the led
+so to do that i'll create another
+variable which tracks the toggle time
+and we can put that in memory page 0 as
+well
+and i'll put it at address 4 because
+remember ticks is at address 0 but it's
+also at address 1 2 and three because
+it's a four byte value so the next sort
+of memory address that's free is address
+four so we'll put our toggle time there
+and i'm just gonna keep track of one
+byte of toggle time since we're not
+trying to keep track of intervals that
+are longer than 256 ticks which would be
+uh i guess about two and a half seconds
+so one byte's enough
+let's initialize that toggle time to
+zero here and we'll just start it out at
+zero
+and then what we wanna do in our loop is
+basically just compare the toggle time
+to the current time the current whatever
+text currently is because you know ticks
+is going to constantly be increasing in
+the background
+so we just want to compare the toggle
+time to ticks and actually what we can
+do is just subtract them and see what
+the difference is and to do subtraction
+the 6502 you start out by setting the
+carry bit because it uses the carry bit
+as sort of an inverse of a borrow
+so we always start out by setting that
+and then we'll load ticks whatever that
+happens to be at the moment and we'll
+subtract the toggle time from that
+and that'll tell us how many ticks have
+passed since the last time toggle time
+was set and then that difference is
+going to be in the accumulator so we can
+just do a compare to compare it to uh
+you know whatever value we want so we
+compare to 25 and that'll see if 250
+milliseconds have elapsed and if 250
+milliseconds or more have elapsed then
+the carry bit will be set so if the
+carry bit is not set then we can just
+branch of carry clear back to loop and
+check again because tix is going to be
+constantly updating otherwise we'll drop
+down here and what we want to do is
+basically just toggle the led and in
+this case we can't just do the increment
+decrement because we don't know if the
+led is on or off we want to toggle it so
+what we can do is just xor the led bit
+by one and that'll toggle it so we'll
+xor whatever's on port a with one and
+that'll flip the bit in that one bit
+position and then write that back out to
+port a and that'll toggle the led
+and then one other thing we have to do
+is we have to
+keep track of the current toggle time so
+we just toggled the led so let's load up
+the low order byte for ticks and store
+that as our new toggle time
+and then we'll go back up to the top of
+our loop and we'll now be checking ticks
+against uh the the updated toggle time
+and see if another 250 milliseconds have
+elapsed and just keep going through that
+process so let's save this and give it a
+try
+[Applause]
+so there we go put that in reset
+and
+of course it's not working
+and i think what we're missing is we
+enable interrupts here on the 6522 to
+tell it to send interrupts
+but we haven't enabled them on the
+processor
+so there's the clear interrupt inhibit
+instruction which enables interrupts so
+let's uh
+enable that
+and give that a try
+all right let's try this again
+there we go so it's blinking and it
+looks like that's probably toggling
+every 250 milliseconds we want to verify
+that we could measure by hooking an
+oscilloscope up so let's do that
+and so there it is and it's toggling
+every 250 milliseconds so the uh the
+entire
+cycle is 500 milliseconds or twice per
+second
+and the frequency it's showing us is
+about two hertz so that all checks out
+so this obviously has a huge advantage
+that we can
+you know basically
+wait for any arbitrary amount of time
+here you know we're literally just
+looking for 250 milliseconds and you
+know we could change this to whatever
+time we wanted if we wanted a much
+longer time you know we might need to do
+a 16-bit comparison but that's certainly
+doable
+and it's also fairly straightforward to
+have the processor do other stuff uh at
+the same time
+and just kind of demonstrate that what i
+could do is i could sort of refactor
+this a little bit change this uh to a
+sort of an update led subroutine and the
+subroutine will do basically the same
+thing it's when you call a subroutine it
+will check the current time the current
+ticks counter
+and versus the last time the led was
+toggled and see if it's been at least
+250 milliseconds then toggle the led
+again and record the new toggle time and
+then return from the subroutine
+and then that way
+the way we could write our program is we
+could have just a main loop for our
+program like this
+and then in that loop we just call this
+update led routine
+[Applause]
+and of course we could do all sorts of
+other stuff in this main loop as well as
+long as we call that update led
+subroutine every so often and everything
+will be fine and of course our text
+counter is is ticking away in the
+background and other subroutines could
+use that for other things and and so on
+so you can see this technique provides
+quite a bit of flexibility so now that
+we've got our led flashing at whatever
+rate we would like it to flash at we
+could you know do some other things with
+the computer and you know perhaps have
+something
+that we put out on the display that
+updates uh periodically in addition to
+the led
+so just as kind of a demonstration of
+that i've pulled in some of the lcd
+routines that i've written in previous
+videos
+that you can go back and look at
+and i've got a new function here called
+update lcd and it's basically doing the
+same thing that we just saw with the
+update led which is it's looking at the
+the ticks the global text counter
+and comparing it to this lcd time
+variable which is just a new variable i
+have that's keeping track of the last
+time the lcd was updated
+and it's comparing it to 100 in decimal
+so that's going to be one second so it's
+going to update the lcd every second so
+if if it hasn't reached one second then
+it skips lcd
+that jumps down here and returns from
+the subroutine but otherwise we we do
+all this stuff and basically what i'm
+doing is i'm taking the tix value and
+ticks plus one so the lower 16 bits of
+ticks
+and putting that into this value
+which is used by print num and again you
+can check out a previous video on
+printing a 16-bit decimal number to the
+lcd
+but that's basically what we're doing is
+we're printing the tix value whatever it
+happens to be or at least the lower 16
+bits of it we're printing that out to
+the lcd and so we store that so that's
+the first thing we do is we store the
+current text value
+and then we clear the display and we
+print that number
+and then here we're loading ticks and
+storing that as lcd time so that's just
+recording the last time that we updated
+the lcd and that's what we're using up
+here for comparison as well
+so this should look very familiar to the
+update led routine that we just wrote
+it's just that instead of these three
+lines where we toggle the led
+we've got these lines here where we
+print out the current text value
+whatever that happens to be
+and if we go up to our main loop it's
+pretty simple we just sit in a loop and
+update the led update the lcd update the
+led update the lcd and then each of
+these routines is sort of responsible
+figuring out if it's time to update so
+update led is gonna update every 250
+milliseconds it'll toggle the led and
+the lcd will update every one second and
+actually there's a change i need to make
+here when we're reading the value of
+ticks and ticks plus one it's possible
+for an interrupt to occur that changes
+ticks in the middle of this so i need to
+set interrupt inhibit here and then
+clear interrupt inhibit down here that
+way no interrupts can occur that change
+ticks while we're reading the two bytes
+of ticks here
+and if we want to take a look at what
+that looks like i've got that program in
+here so we'll go ahead and reset
+and the led is flashing
+and here you see the lcd updating and
+it's updating every second and it's
+printing out the current text value
+which is you know incrementing every 10
+milliseconds so 100 times a second and
+since it's printing the current text
+value right after it rolls past each 100
+ticks
+we see it appearing to just count by
+hundreds so anyway hopefully you found
+that interesting to see how programmable
+timers are used by a computer and some
+of the different things that they make
+possible so as always you know thanks to
+all my patrons for helping make this
+video possible and all the videos on my
+channel possible
+and remember if you're interested in
+trying any of this stuff yourself check
+out my website eater.net 6502 you can
+find all the details on how this 6502
+computer works and and build your own
