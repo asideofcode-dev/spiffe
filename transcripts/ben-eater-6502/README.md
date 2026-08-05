@@ -7,6 +7,10 @@ Auto-generated YouTube captions for Ben Eater’s playlist
 - Source video: [“Hello, world” from scratch on a 6502 — Part 1](https://youtu.be/LnzuMJLZRdU)
 - Captions are YouTube auto-generated (not official human transcripts)
 
+## Synthesis
+
+**[BEN-EATER-6502-APPROACH.md](./BEN-EATER-6502-APPROACH.md)** — cohesive walkthrough of Ben’s method: what he builds and how (CPU bring-up, memory map, LCD, RAM timing, interrupts, keyboard, serial, Wozmon, BASIC, sound).
+
 ## Status
 
 **28 of 29** playlist videos have transcript files.
