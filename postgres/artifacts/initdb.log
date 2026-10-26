@@ -1,0 +1,9 @@
+initdb: verbose mode on
+initdb: using /tmp/pg95/data/files/local1_template1.bki
+initdb: using /tmp/pg95/data/files/global1.bki
+initdb: creating SHARED relations in /tmp/pg95/data
+initdb: creating template database in /tmp/pg95/data/base/template1
+postgres -boot -C -Q template1 < /tmp/pg95/data/files/local1_template1.bki 
+postgres -boot -C -Q template1 < /tmp/pg95/data/files/global1.bki
+postgres -boot -C -Q template1 < /tmp/create.7147
+vacuuming template1
