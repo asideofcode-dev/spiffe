@@ -25,6 +25,10 @@ postgres/src/
 
 Start with `src/backend/main/`, `src/backend/tcop/`, and `src/backend/access/heap/` if you want a readable path through query dispatch and heap access.
 
+## Runnable sketch
+
+The 1996 sources do not build on modern Linux. For a working listen→accept→fork→exec demo, see [`learn/`](learn/).
+
 ## License
 
 Original copyright notices apply (University of California / Postgres95). See headers in individual source files.

@@ -1,0 +1,4 @@
+mini_postmaster
+mini_backend
+.pm.pid
+*.o
