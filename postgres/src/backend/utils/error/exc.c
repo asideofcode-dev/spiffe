@@ -118,11 +118,8 @@ ExcPrint(Exception *excP,
     
     (void) fprintf(stderr, " (%ld)", detail);
     
-    if (errno > 0 && errno < sys_nerr &&
-	sys_errlist[errno] != NULL && sys_errlist[errno][0] != '\0')
-	(void) fprintf(stderr, " [%s]", sys_errlist[errno]);
-    else if (errno != 0)
-	(void) fprintf(stderr, " [Error %d]", errno);
+    if (errno != 0)
+	(void) fprintf(stderr, " [%s]", strerror(errno));
     
     (void) fprintf(stderr, "\n");
     

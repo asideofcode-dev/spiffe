@@ -56,7 +56,7 @@
 #	until after this file is processed!
 #  make sure that you have no whitespaces after the PORTNAME setting
 #  or the makefiles can get confused
-PORTNAME=	alpha
+PORTNAME=	linux
 
 # POSTGRESLOGIN is the login name of the user who gets special
 # privileges within the database.  By default it is "postgres", but

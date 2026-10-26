@@ -97,7 +97,8 @@ int	dontExecute = 0;
 static int	ShowStats;
 static bool	IsEmptyQuery = false;
 
-Relation	reldesc;		/* current relation descritor */
+/* Defined in bootstrap/bootstrap.c; only used under -boot. */
+extern Relation	reldesc;		/* current relation descritor */
 char		relname[80];		/* current relation name */
 
 #if defined(WIN32) || defined(PORTNAME_next)

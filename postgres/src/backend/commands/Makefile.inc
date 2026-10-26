@@ -15,8 +15,11 @@ VPATH:=$(VPATH):$(CURDIR)/commands
 
 
 SRCS_COMMANDS= async.c creatinh.c command.c copy.c defind.c define.c \
-	purge.c remove.c rename.c vacuum.c version.c view.c cluster.c \
+	purge.c remove.c rename.c vacuum.c view.c cluster.c \
 	recipe.c explain.c
+# version.c lives under _deadcode/ (untested in Postgres95); pull it in explicitly.
+VPATH:=$(VPATH):$(CURDIR)/commands/_deadcode
+SRCS_COMMANDS+= version.c
 
 HEADERS+= async.h command.h copy.h creatinh.h defrem.h purge.h \
 	rename.h vacuum.h version.h view.h cluster.h \

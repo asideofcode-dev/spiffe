@@ -24,7 +24,7 @@
 #undef yywrap
 #endif /* yywrap */
 
-YYSTYPE	yylval;
+extern YYSTYPE	yylval;	/* defined by bootparse (bison) */
 int	yyline;  /* keep track of the line number for error reporting */
 
 %}

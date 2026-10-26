@@ -13,7 +13,7 @@
 
 LIB=	pq
 
-MKDIR=	../mk
+MKDIR=	../../mk
 include $(MKDIR)/postgres.mk
 
 CFLAGS+= -I$(srcdir)/backend/include \

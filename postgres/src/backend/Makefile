@@ -231,7 +231,7 @@ install: beforeinstall pg_id $(BKIFILES) postgres
 		    $$bki $(DESTDIR)$(DATADIR)/files/$$bki.source; \
 	done;
 	@echo "Installing $(DATADIR)/pg_hba";
-	@cp $(srcdir)/libpq/pg_hba $(DATADIR)
+	@cp $(srcdir)/interfaces/libpq/pg_hba $(DATADIR)
 	@chmod 644 $(DATADIR)/pg_hba
 
 

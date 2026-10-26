@@ -25,9 +25,19 @@ postgres/src/
 
 Start with `src/backend/main/`, `src/backend/tcop/`, and `src/backend/access/heap/` if you want a readable path through query dispatch and heap access.
 
-## Runnable sketch
+## Build & run the real postmaster
 
-The 1996 sources do not build on modern Linux. For a working listen→accept→fork→exec demo, see [`learn/`](learn/).
+See **[`BUILD.md`](BUILD.md)**. Short version:
+
+```bash
+# needs gcc-multilib / 32-bit libc (Postgres95 is 32-bit)
+./postgres/scripts/build-and-run.sh
+```
+
+That builds a 32-bit `postmaster`, runs `initdb`, starts it on port 15432, and
+runs a smoke `SELECT` via the vintage libpq.
+
+For a tiny listen→accept→fork→exec teaching sketch (no database), see [`learn/`](learn/).
 
 ## License
 

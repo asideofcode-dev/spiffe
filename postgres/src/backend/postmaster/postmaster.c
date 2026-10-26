@@ -78,8 +78,8 @@
 #ifdef DBX_VERSION
 #define FORK() (0)
 #else
-#if defined(PORTNAME_irix5)
-/* IRIX 5 does not have vfork() */
+#if defined(PORTNAME_irix5) || defined(PORTNAME_linux)
+/* IRIX 5 has no vfork(); modern Linux vfork is unsafe with DoExec's stack use */
 #define FORK() fork()
 #else
 #define FORK() vfork()
@@ -107,7 +107,8 @@ static short	ActiveBackends = FALSE;
 static int	NextBackendId = MAXINT;		/* XXX why? */
 static char	*progname = (char *) NULL;
 
-char		*DataDir = (char *) NULL;
+/* Defined in utils/init/globals.c */
+extern char	*DataDir;
     
 /*
  * Default Values
@@ -835,8 +836,8 @@ BackendStartup(StartupInfo *packet, /* client's startup packet */
 #ifndef WIN32
     if ((pid = FORK()) == 0) {	/* child */
 	if (DoExec(packet, port->sock))
-	    fprintf(stderr, "%s child[%d]: BackendStartup: execv failed\n",
-		    progname, pid);
+	    fprintf(stderr, "%s child[%d]: BackendStartup: execv failed: %s (Execfile='%s')\n",
+		    progname, (int)getpid(), strerror(errno), Execfile);
 	/* use _exit to keep from double-flushing stdio */
 	_exit(1);
     }
@@ -1002,7 +1003,7 @@ DoExec(StartupInfo *packet, int portFd)
     (void) strncpy(argbuf, packet->options, ARGV_SIZE);
     argbuf[ARGV_SIZE] = '\0';
     (void) strncat(argbuf, ExtraOptions, ARGV_SIZE);
-    argbuf[(2 * ARGV_SIZE) + 1] = '\0';
+    argbuf[(2 * ARGV_SIZE)] = '\0';
     split_opts(av, &ac, argbuf);
     
     if (packet->database[0])

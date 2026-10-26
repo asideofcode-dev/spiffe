@@ -97,10 +97,8 @@ elog(int lev, char *fmt, ... )
     while (i-- >0) *bp++ = ' ';
     for (cp = fmt; *cp; cp++)
 	if (*cp == '%' && *(cp+1) == 'm') {
-	    if (errno < sys_nerr && errno >= 0)
-		strcpy(bp, sys_errlist[errno]);
-	    else
-		sprintf(bp, "error %d", errno);
+	    /* glibc no longer exports sys_errlist; use strerror(3). */
+	    strcpy(bp, strerror(errno));
 	    bp += strlen(bp);
 	    cp++;
 	} else
