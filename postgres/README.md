@@ -23,7 +23,9 @@ postgres/src/
   tools/        # build / maintenance helpers
 ```
 
-Start with `src/backend/main/`, `src/backend/tcop/`, and `src/backend/access/heap/` if you want a readable path through query dispatch and heap access.
+**Reading order:** see **[`READING.md`](READING.md)** — Paths A–F (networking, one query end-to-end, shared memory, initdb/catalogs, DDL, frontend), plus a short skip list and evening plan.
+
+Quick start without the full guide: `src/backend/main/`, `src/backend/tcop/`, and `src/backend/access/heap/` for query dispatch and heap access.
 
 ## Build & run the real postmaster
 
