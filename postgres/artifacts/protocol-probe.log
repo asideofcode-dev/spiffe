@@ -1,0 +1,188 @@
+===== CONNECT =====
+host=localhost port=15432 db=template1 PGUSER=ubuntu
+PQstatus=CONNECTION_OK
+PQdb=template1 PQhost=localhost PQport=15432
+
+===== list databases =====
+SQL: select * from pg_database
+STATUS: PGRES_TUPLES_OK (2)
+TUPLES: 1  FIELDS: 3
+COLUMNS: datname datdba datpath
+ROW[0]: datname=template1 datdba=1000 datpath=template1
+
+===== list users =====
+SQL: select * from pg_user
+STATUS: PGRES_TUPLES_OK (2)
+TUPLES: 1  FIELDS: 6
+COLUMNS: usename usesysid usecreatedb usetrace usesuper usecatupd
+ROW[0]: usename=ubuntu usesysid=1000 usecreatedb=t usetrace=t usesuper=t usecatupd=t
+
+===== count classes =====
+SQL: select count(*) from pg_class
+STATUS: PGRES_TUPLES_OK (2)
+TUPLES: 1  FIELDS: 1
+COLUMNS: count
+ROW[0]: count=41
+
+===== sample relation names =====
+SQL: select relname from pg_class
+STATUS: PGRES_TUPLES_OK (2)
+TUPLES: 41  FIELDS: 1
+COLUMNS: relname
+ROW[0]: relname=pg_type
+ROW[1]: relname=pg_attribute
+ROW[2]: relname=pg_demon
+ROW[3]: relname=pg_magic
+ROW[4]: relname=pg_proc
+ROW[5]: relname=pg_server
+ROW[6]: relname=pg_class
+ROW[7]: relname=pg_user
+ROW[8]: relname=pg_group
+ROW[9]: relname=pg_database
+ROW[10]: relname=pg_defaults
+ROW[11]: relname=pg_variable
+ROW[12]: relname=pg_log
+ROW[13]: relname=pg_time
+ROW[14]: relname=pg_hosts
+ROW[15]: relname=pg_inherits
+ROW[16]: relname=pg_index
+ROW[17]: relname=pg_version
+ROW[18]: relname=pg_statistic
+ROW[19]: relname=pg_operator
+ROW[20]: relname=pg_opclass
+ROW[21]: relname=pg_am
+ROW[22]: relname=pg_amop
+ROW[23]: relname=pg_amproc
+ROW[24]: relname=pg_language
+... (16 more rows omitted)
+
+===== list type names =====
+SQL: select typname from pg_type
+STATUS: PGRES_TUPLES_OK (2)
+TUPLES: 103  FIELDS: 1
+COLUMNS: typname
+ROW[0]: typname=bool
+ROW[1]: typname=bytea
+ROW[2]: typname=char
+ROW[3]: typname=name
+ROW[4]: typname=char16
+ROW[5]: typname=int2
+ROW[6]: typname=int28
+ROW[7]: typname=int4
+ROW[8]: typname=regproc
+ROW[9]: typname=text
+ROW[10]: typname=oid
+ROW[11]: typname=tid
+ROW[12]: typname=xid
+ROW[13]: typname=cid
+ROW[14]: typname=oid8
+ROW[15]: typname=SET
+ROW[16]: typname=pg_type
+ROW[17]: typname=pg_attribute
+ROW[18]: typname=pg_demon
+ROW[19]: typname=pg_magic
+ROW[20]: typname=pg_proc
+ROW[21]: typname=pg_server
+ROW[22]: typname=pg_class
+ROW[23]: typname=pg_user
+ROW[24]: typname=pg_group
+... (78 more rows omitted)
+
+===== constant select =====
+SQL: select 1
+STATUS: PGRES_TUPLES_OK (2)
+TUPLES: 1  FIELDS: 1
+COLUMNS: ?column?
+ROW[0]: ?column?=1
+
+===== string constant =====
+SQL: select 'hello'
+STATUS: PGRES_TUPLES_OK (2)
+TUPLES: 1  FIELDS: 1
+COLUMNS: ?column?
+ROW[0]: ?column?=hello
+
+===== now() =====
+SQL: select now()
+RESULT: NULL  err=WARN:func_get_detail: function now() does not exist
+
+
+===== create table =====
+SQL: create table probe_demo (id int4, name text)
+STATUS: PGRES_COMMAND_OK (1)
+CMDSTATUS: CREATE
+TUPLES: 0  FIELDS: 0
+
+===== insert row 1 =====
+SQL: insert into probe_demo values (1, 'alpha')
+STATUS: PGRES_COMMAND_OK (1)
+CMDSTATUS: INSERT 20827
+TUPLES: 0  FIELDS: 0
+
+===== insert row 2 =====
+SQL: insert into probe_demo values (2, 'beta')
+STATUS: PGRES_COMMAND_OK (1)
+CMDSTATUS: INSERT 20828
+TUPLES: 0  FIELDS: 0
+
+===== select table =====
+SQL: select * from probe_demo
+STATUS: PGRES_TUPLES_OK (2)
+TUPLES: 2  FIELDS: 2
+COLUMNS: id name
+ROW[0]: id=1 name=alpha
+ROW[1]: id=2 name=beta
+
+===== update =====
+SQL: update probe_demo set name = 'ALPHA' where id = 1
+STATUS: PGRES_COMMAND_OK (1)
+CMDSTATUS: UPDATE
+TUPLES: 0  FIELDS: 0
+
+===== select after update =====
+SQL: select * from probe_demo
+STATUS: PGRES_TUPLES_OK (2)
+TUPLES: 2  FIELDS: 2
+COLUMNS: id name
+ROW[0]: id=2 name=beta
+ROW[1]: id=1 name=ALPHA
+
+===== delete =====
+SQL: delete from probe_demo where id = 2
+STATUS: PGRES_COMMAND_OK (1)
+CMDSTATUS: DELETE
+TUPLES: 0  FIELDS: 0
+
+===== select after delete =====
+SQL: select * from probe_demo
+STATUS: PGRES_TUPLES_OK (2)
+TUPLES: 1  FIELDS: 2
+COLUMNS: id name
+ROW[0]: id=1 name=ALPHA
+
+===== syntax error =====
+SQL: SELEC
+RESULT: NULL  err=WARN:parser: syntax error at or near "SELEC"
+
+
+
+===== missing relation =====
+SQL: select * from no_such_table
+RESULT: NULL  err=WARN:no_such_table: Either no such class or insufficient privilege
+
+
+===== empty query =====
+SQL: 
+RESULT: NULL  err=WARN:no_such_table: Either no such class or insufficient privilege
+
+
+===== select after errors =====
+SQL: select * from probe_demo
+STATUS: PGRES_TUPLES_OK (2)
+TUPLES: 1  FIELDS: 2
+COLUMNS: id name
+ROW[0]: id=1 name=ALPHA
+
+===== drop table =====
+SQL: drop table probe_demo
+free(): double free detected in tcache 2

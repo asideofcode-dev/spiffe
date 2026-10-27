@@ -1,0 +1,33 @@
+# Local build for modern Linux (Postgres95 1.01 first-commit snapshot)
+PORTNAME=linux
+# Must set outside mk/port's MK_PORT guard (Makefile.global includes the
+# port fragment before Makefile.custom, so LINUX_ELF may otherwise be missed).
+LINUX_ELF=1
+POSTGRESLOGIN=$(shell whoami)
+POSTGRESDIR=/tmp/pg95
+# MKDIR is set by the including Makefile before postgres.mk pulls this in.
+SRCDIR=$(shell cd $(MKDIR)/.. && pwd)
+DATADIR=$(POSTGRESDIR)/data
+BINDIR=$(POSTGRESDIR)/bin
+LIBDIR=$(POSTGRESDIR)/lib
+HEADERDIR=$(POSTGRESDIR)/include
+
+CC=gcc
+# Postgres95 assumes 32-bit pointers/Datums — must build with -m32 on x86_64.
+CFLAGS+= -m32
+LDFLAGS+= -m32
+# Old K&R-ish / C89 codebase; keep GNU extensions for Linux port macros
+CFLAGS+= -std=gnu89 -fno-strict-aliasing -fcommon
+CFLAGS+= -Wno-error -w
+CFLAGS+= -D_GNU_SOURCE -D__USE_BSD
+# Force a few modern declarations without editing every .c
+CFLAGS+= -include $(SRCDIR)/backend/include/modern_compat.h
+
+# Prefer system install over BSD installbsd
+INSTALL=install
+
+# linux port defaults: -m486 is rejected by modern gcc
+CFLAGS_OPT= -O0 -pipe
+LDADD_BE= -lbsd
+LEX=flex
+YACC=bison -y

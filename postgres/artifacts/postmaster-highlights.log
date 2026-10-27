@@ -1,0 +1,16 @@
+FindBackend: found "/tmp/pg95/bin/postgres" using argv[0]
+binding ShmemCreate(key=1a4e1b3c, size=753352)
+/tmp/pg95/bin/postmaster: ServerLoop: 1 sockets pending
+/tmp/pg95/bin/postmaster: ServerLoop: connect on 4
+/tmp/pg95/bin/postmaster: ServerLoop:	nSelected=0
+/tmp/pg95/bin/postmaster: ServerLoop:		port 4 pending
+/tmp/pg95/bin/postmaster: ServerLoop: 1 sockets pending
+/tmp/pg95/bin/postmaster: ServerLoop:	nSelected=1
+/tmp/pg95/bin/postmaster: ServerLoop:		port 4 pending
+/tmp/pg95/bin/postmaster: ServerLoop:		handling 4
+/tmp/pg95/bin/postmaster: BackendStartup: pid 8017 user ubuntu db template1 socket 4
+/tmp/pg95/bin/postmaster: ServerLoop:		done with 4
+/tmp/pg95/bin/postmaster child[8017]: execv(/tmp/pg95/bin/postgres, -p, -d1, -P4, template1, )
+FindBackend: found "/tmp/pg95/bin/postgres" using argv[0]
+/tmp/pg95/bin/postmaster: CleanupProc: pid 8017 exited with status 0
+===== PROBE END =====
