@@ -23,7 +23,7 @@ postgres/src/
   tools/        # build / maintenance helpers
 ```
 
-**Reading order:** see **[`READING.md`](READING.md)** — Paths A–F (networking, one query end-to-end, shared memory, initdb/catalogs, DDL, frontend), plus a short skip list and evening plan.
+**Reading order:** see **[`READING.md`](https://github.com/asideofcode-dev/spiffe/blob/cursor/postgres-first-commit-430a/postgres/READING.md)** — Paths A–F with tap-friendly GitHub links into the first commit (`d31084e`) on mobile.
 
 Quick start without the full guide: `src/backend/main/`, `src/backend/tcop/`, and `src/backend/access/heap/` for query dispatch and heap access.
 
