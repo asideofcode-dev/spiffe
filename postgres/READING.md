@@ -75,11 +75,15 @@ One binary, three modes ([`main/main.c`](https://github.com/postgres/postgres/bl
 **Goal:** see `socket` → `bind` → `listen` → `select` → `accept` → `fork` → `execv`
 without drowning in SQL.
 
+**New to C?** Before or while reading `postmaster.c`, use the annotated slice guide:
+[`READ_POSTMASTER.md`](https://github.com/asideofcode-dev/spiffe/blob/cursor/postgres-first-commit-430a/postgres/READ_POSTMASTER.md)
+(`#ifdef`, `static`, pointers, and every external call linked).
+
 | # | Read | Focus |
 |---|------|--------|
 | 1 | [`mini_postmaster.c`](https://github.com/asideofcode-dev/spiffe/blob/cursor/postgres-first-commit-430a/postgres/learn/mini_postmaster.c) + [`mini_backend.c`](https://github.com/asideofcode-dev/spiffe/blob/cursor/postgres-first-commit-430a/postgres/learn/mini_backend.c) | Same control flow in ~200 lines of modern C. Run `learn/Makefile`. |
 | 2 | [`main.c`](https://github.com/postgres/postgres/blob/d31084e9d1118b25fd16580d9d8c2924b5740dff/src/backend/main/main.c) | How one binary becomes postmaster vs backend. |
-| 3 | [`postmaster.c`](https://github.com/postgres/postgres/blob/d31084e9d1118b25fd16580d9d8c2924b5740dff/src/backend/postmaster/postmaster.c) | `PostmasterMain` → `StreamServerPort` → `ServerLoop` → `ConnCreate` → `ConnStartup` → `BackendStartup` → `DoExec`. |
+| 3 | [`postmaster.c`](https://github.com/postgres/postgres/blob/d31084e9d1118b25fd16580d9d8c2924b5740dff/src/backend/postmaster/postmaster.c) (+ [annotated helper](https://github.com/asideofcode-dev/spiffe/blob/cursor/postgres-first-commit-430a/postgres/READ_POSTMASTER.md)) | `PostmasterMain` → `StreamServerPort` → `ServerLoop` → `ConnCreate` → `ConnStartup` → `BackendStartup` → `DoExec`. |
 | 4 | [`pqcomm.c`](https://github.com/postgres/postgres/blob/d31084e9d1118b25fd16580d9d8c2924b5740dff/src/backend/libpq/pqcomm.c) | `StreamServerPort`, `StreamConnection`, `StreamOpen` — real `socket`/`bind`/`listen`/`accept`/`connect`. |
 | 5 | [`pqpacket.c`](https://github.com/postgres/postgres/blob/d31084e9d1118b25fd16580d9d8c2924b5740dff/src/backend/libpq/pqpacket.c) | `PacketReceive` / `PacketSend` — length-prefixed packets, peek then read. |
 | 6 | [`pqcomm.h`](https://github.com/postgres/postgres/blob/d31084e9d1118b25fd16580d9d8c2924b5740dff/src/backend/libpq/pqcomm.h) | `Port`, `PacketBuf`, `StartupInfo`, `MsgType`. |

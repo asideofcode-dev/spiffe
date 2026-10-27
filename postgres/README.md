@@ -25,6 +25,8 @@ postgres/src/
 
 **Reading order:** see **[`READING.md`](https://github.com/asideofcode-dev/spiffe/blob/cursor/postgres-first-commit-430a/postgres/READING.md)** — Paths A–F with tap-friendly GitHub links into the first commit (`d31084e`) on mobile.
 
+**C + `postmaster.c`:** annotated slice guide for newcomers — **[`READ_POSTMASTER.md`](https://github.com/asideofcode-dev/spiffe/blob/cursor/postgres-first-commit-430a/postgres/READ_POSTMASTER.md)** (`#ifdef`, `static`, externals linked).
+
 Quick start without the full guide: `src/backend/main/`, `src/backend/tcop/`, and `src/backend/access/heap/` for query dispatch and heap access.
 
 ## Build & run the real postmaster
